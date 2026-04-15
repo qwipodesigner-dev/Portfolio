@@ -26,7 +26,7 @@ const word = {
     transition: {
       delay: 0.15 + i * 0.06,
       duration: 0.85,
-      ease: [0.22, 1, 0.36, 1],
+      ease: [0.22, 1, 0.36, 1] as const,
     },
   }),
 };

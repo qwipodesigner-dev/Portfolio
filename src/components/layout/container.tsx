@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { cn } from "@/lib/cn";
 
 type ContainerProps = {
@@ -17,12 +18,12 @@ const sizeMap = {
 export function Container({
   children,
   className,
-  as: Tag = "div",
+  as = "div",
   size = "lg",
 }: ContainerProps) {
-  return (
-    <Tag className={cn("mx-auto w-full px-6 md:px-10", sizeMap[size], className)}>
-      {children}
-    </Tag>
+  return createElement(
+    as,
+    { className: cn("mx-auto w-full px-6 md:px-10", sizeMap[size], className) },
+    children
   );
 }

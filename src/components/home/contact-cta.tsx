@@ -33,7 +33,7 @@ export function ContactCTA() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-20%" }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] as const }}
           className="flex flex-col items-center text-center gap-10"
         >
           <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
