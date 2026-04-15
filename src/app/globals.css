@@ -1,26 +1,145 @@
 @import "tailwindcss";
 
+/* ===========================================================
+   Theme variants
+   =========================================================== */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===========================================================
+   Design tokens — consumed by @theme below
+   =========================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* base */
+  --color-bg: #fafaf7;
+  --color-surface: #ffffff;
+  --color-fg: #0a0a0a;
+  --color-fg-muted: #6b6b66;
+  --color-fg-subtle: #8e8e86;
+  --color-border: #e8e6e0;
+
+  /* brand */
+  --color-accent: #e85d2e;
+  --color-accent-soft: #ffede3;
+
+  color-scheme: light;
 }
 
+.dark {
+  --color-bg: #0b0b0a;
+  --color-surface: #141413;
+  --color-fg: #f2f2ee;
+  --color-fg-muted: #a3a39b;
+  --color-fg-subtle: #6b6b66;
+  --color-border: #26251f;
+
+  --color-accent: #f27144;
+  --color-accent-soft: #2a150c;
+
+  color-scheme: dark;
+}
+
+/* ===========================================================
+   Tailwind @theme — wire CSS vars into utility classes
+   =========================================================== */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-fg: var(--color-fg);
+  --color-fg-muted: var(--color-fg-muted);
+  --color-fg-subtle: var(--color-fg-subtle);
+  --color-border: var(--color-border);
+  --color-accent: var(--color-accent);
+  --color-accent-soft: var(--color-accent-soft);
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ===========================================================
+   Base layer
+   =========================================================== */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.011em;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: #ffffff;
+  }
+
+  /* Focus rings */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Prose defaults */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    font-weight: 500;
+  }
+
+  /* Hairline border utility */
+  .hairline {
+    border-color: var(--color-border);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===========================================================
+   Utilities
+   =========================================================== */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Noise overlay for textured surfaces */
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+
+  /* Prevents flash before fonts load */
+  .font-display {
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+  }
+}
+
+/* ===========================================================
+   Accessibility
+   =========================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
