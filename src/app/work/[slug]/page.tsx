@@ -121,73 +121,63 @@ export default async function CaseStudyPage({
         </Container>
       </section>
 
-      {/* Body — placeholder case study */}
+      {/* Body — real case study content */}
       <section className="py-24 md:py-32">
         <Container size="sm">
-          <Reveal>
-            <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              01 · Context
-            </span>
-            <h2 className="font-display text-3xl md:text-4xl mt-4 mb-6 text-balance">
-              The problem we needed to solve.
-            </h2>
-            <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-              {project.description}
-            </p>
-          </Reveal>
+          {project.sections.map((section, idx) => (
+            <Reveal key={section.eyebrow} delay={idx * 0.08}>
+              <div
+                className={
+                  idx === 0 ? "" : "mt-16 pt-16 border-t border-border"
+                }
+              >
+                <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
+                  {section.eyebrow}
+                </span>
+                <h2 className="font-display text-3xl md:text-4xl mt-4 mb-6 text-balance">
+                  {section.title}
+                </h2>
+                <p className="text-fg-muted text-lg leading-relaxed text-pretty">
+                  {section.body}
+                </p>
+                {section.bullets && (
+                  <ul className="mt-6 flex flex-col gap-3">
+                    {section.bullets.map((b, i) => (
+                      <li
+                        key={i}
+                        className="flex gap-4 text-fg-muted leading-relaxed"
+                      >
+                        <span
+                          aria-hidden
+                          className="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-accent flex-none"
+                        />
+                        <span className="text-pretty">{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </Reveal>
+          ))}
 
-          <Reveal delay={0.2}>
-            <div className="mt-16 pt-16 border-t border-border">
-              <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-                02 · Discovery & research
-              </span>
-              <h2 className="font-display text-3xl md:text-4xl mt-4 mb-6 text-balance">
-                What we learned before designing.
-              </h2>
-              <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-                Stakeholder interviews, PRD reviews, and competitive audits
-                mapped the problem space. A detailed walkthrough of research
-                artifacts — personas, journey maps, and key quotes — is being
-                documented for this case study.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.3}>
-            <div className="mt-16 pt-16 border-t border-border">
-              <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-                03 · Approach
-              </span>
-              <h2 className="font-display text-3xl md:text-4xl mt-4 mb-6 text-balance">
-                From wireframes to shipped interface.
-              </h2>
-              <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-                Designed in Figma with a token-driven design system. Iterated
-                weekly with engineering and product to keep scope honest and
-                the build predictable.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.4}>
-            <div className="mt-16 pt-16 border-t border-border">
-              <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-                04 · Outcomes
-              </span>
-              <h2 className="font-display text-3xl md:text-4xl mt-4 mb-6 text-balance">
-                What shipped, and what changed.
-              </h2>
-              <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-                {project.outcome ??
-                  "Outcome metrics and reflections are being finalized for this case study. Reach out if you'd like to walk through the project in more detail."}
-              </p>
-            </div>
-          </Reveal>
+          {project.reflection && (
+            <Reveal delay={0.4}>
+              <blockquote className="mt-20 pt-16 border-t border-border">
+                <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
+                  Reflection
+                </span>
+                <p className="font-display text-2xl md:text-3xl mt-4 leading-snug text-balance italic">
+                  &ldquo;{project.reflection}&rdquo;
+                </p>
+              </blockquote>
+            </Reveal>
+          )}
 
           <Reveal delay={0.5}>
             <div className="mt-20 pt-10 border-t border-border flex flex-wrap items-center justify-between gap-6">
-              <p className="font-mono text-xs uppercase tracking-[0.22em] text-fg-subtle">
-                A longer form of this case study is in the works.
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-fg-subtle max-w-md">
+                Want a walkthrough with real screens and metrics? Reach out — I&apos;m
+                happy to share more under a short call.
               </p>
               <a
                 href="mailto:vikasmittapalli@gmail.com"

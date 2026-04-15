@@ -56,7 +56,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden pt-8 md:pt-16 pb-24 md:pb-32">
       {/* 3D canvas — absolute on desktop, relative on mobile */}
-      <div className="absolute inset-y-0 right-0 w-full md:w-[55%] md:h-full h-[60%] top-[35%] md:top-0 pointer-events-auto">
+      <div className="absolute inset-y-0 right-0 w-full md:w-[45%] lg:w-[42%] md:h-full h-[45%] top-[55%] md:top-0 md:pr-4 lg:pr-8 pointer-events-auto opacity-90">
         <Hero3D />
       </div>
 
@@ -66,7 +66,7 @@ export function Hero() {
       <Container className="relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 min-h-[78vh] md:min-h-[82vh] items-end md:items-center pt-12">
           {/* Copy */}
-          <div className="md:col-span-7 flex flex-col gap-8">
+          <div className="md:col-span-8 lg:col-span-7 flex flex-col gap-8">
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

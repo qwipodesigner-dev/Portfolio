@@ -43,29 +43,29 @@ function Blob() {
       <Float speed={1.6} rotationIntensity={0.35} floatIntensity={0.9}>
         {/* Main body — distorted accent sphere */}
         <mesh ref={meshRef}>
-          <icosahedronGeometry args={[1.4, 24]} />
+          <icosahedronGeometry args={[1.1, 24]} />
           <MeshDistortMaterial
             color="#e85d2e"
-            distort={0.42}
-            speed={1.4}
-            roughness={0.15}
-            metalness={0.25}
+            distort={0.38}
+            speed={1.3}
+            roughness={0.18}
+            metalness={0.3}
           />
         </mesh>
 
         {/* Inner wireframe — precision over softness */}
         <mesh scale={1.02}>
-          <icosahedronGeometry args={[1.4, 3]} />
+          <icosahedronGeometry args={[1.1, 3]} />
           <meshBasicMaterial
             color={resolvedTheme === "dark" ? "#f2f2ee" : "#0a0a0a"}
             wireframe
             transparent
-            opacity={0.12}
+            opacity={0.14}
           />
         </mesh>
 
         {/* Floating satellite */}
-        <mesh position={[2.2, 1, -1]} scale={0.2}>
+        <mesh position={[2, 0.9, -1]} scale={0.18}>
           <icosahedronGeometry args={[1, 1]} />
           <MeshWobbleMaterial
             color="#e85d2e"
@@ -90,7 +90,7 @@ export function Hero3D() {
     >
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [0, 0, 4.5], fov: 45 }}
+        camera={{ position: [0, 0, 5.5], fov: 38 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
       >
