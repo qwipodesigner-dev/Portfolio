@@ -18,146 +18,291 @@ export type Project = {
   accent: string;
   featured: boolean;
   outcome?: string;
-  // Case study body
   sections: CaseStudySection[];
   reflection?: string;
 };
 
 export const projects: Project[] = [
   {
-    slug: "qwipo",
-    title: "Qwipo",
-    tagline: "Seller & logistics platform for modern B2B commerce",
+    slug: "qwipo-seller-store",
+    title: "Qwipo Seller Store",
+    tagline:
+      "An ONDC-compliant B2B seller ecosystem for distributors, wholesalers, brands, and retailers",
     description:
-      "Designing scalable seller and logistics workflows — onboarding, inventory, order management, and pricing systems — for a B2B2C commerce platform operating across India.",
+      "Designing scalable seller and operations workflows for an ONDC-aligned B2B platform — multi-marketplace listings, hierarchical user roles, inventory and pricing systems — used by distributors and DMS companies across India.",
     role: "Senior Product Designer",
     year: "2025 — Present",
     client: "Qwipo",
-    stack: ["Figma", "Design System", "Research", "Prototyping"],
-    cover: "/images/projects/qwipo-cover.jpg",
+    stack: ["Figma", "Design System", "ONDC", "Multi-user Hierarchy"],
+    cover: "/images/projects/qwipo-seller-cover.jpg",
     accent: "#E85D2E",
     featured: true,
-    outcome: "Shipping seller & logistics modules end-to-end",
+    outcome:
+      "ONDC-aligned seller platform powering distributor and DMS operations",
     sections: [
       {
         eyebrow: "01 · Context",
-        title: "B2B commerce isn't a consumer app with bigger cart values.",
-        body: "Qwipo operates a B2B2C commerce platform that connects retailers, distributors, and brands across India. Every screen touches a seller's livelihood — pricing, inventory, order management — so the cost of a confusing flow isn't a lost sale, it's trust eroded across thousands of operators. I was brought in to take ownership of end-to-end design across seller-facing surfaces.",
+        title:
+          "B2B selling runs on Excel and habit. The brief was to build something they'd actually switch to.",
+        body: "Qwipo Seller Store is an ONDC-compliant platform for distributors, wholesalers, D2R brands, retailers, and enterprise distribution management systems. It lets independent sellers and large organisations centrally manage product catalogs, pricing, operations, and order workflows across ONDC, Amazon, Flipkart, and other marketplaces. Most of these users live across spreadsheets, WhatsApp, and a stack of brand-specific tools — the bar wasn't 'modern UI', it was 'worth retraining a team for'.",
       },
       {
         eyebrow: "02 · Discovery & Research",
-        title: "Translating PRDs, APIs, and stakeholder intent into user-ready flows.",
-        body: "The product moves fast, and most specifications come through as PRDs and API documentation. I spend the first phase of every initiative translating those into user stories — sitting with stakeholders, product managers, and engineering leads to pressure-test assumptions before any pixel is drawn.",
+        title: "Operational research with people who don't have time for operational research.",
+        body: "I worked with distributors, wholesalers, DMS users, and independent sellers to map the workflows that actually consume their day — not the ones that look good on a feature list. Digital literacy varied widely; the same screen had to work for a 22-year-old marketplace manager and a 55-year-old distribution lead.",
         bullets: [
-          "Stakeholder interviews to align design, PM, and engineering on success criteria",
-          "PRD + API review to surface edge cases and state explosion early",
-          "Workflow mapping across onboarding, inventory, order, and pricing touchpoints",
+          "Behavioural studies of seller routines, peak-hour bottlenecks, and abandoned tasks",
+          "Mapping high-frequency actions (search, compare, list, price-update) for fast-path treatment",
+          "Role-hierarchy and permission modelling across distributors, branches, and franchise teams",
+          "Integration paths for ONDC, Amazon, Flipkart, and direct-to-marketplace flows",
         ],
       },
       {
         eyebrow: "03 · Approach",
-        title: "Systems-first, shipped in thin vertical slices.",
-        body: "Rather than designing screens in isolation, I build each module against a shared set of tokens and patterns — so the seller onboarding, inventory manager, and pricing engine all feel like one product. Lo-fi flows validate the logic, then hi-fi compositions layer in density, empty states, and edge cases. Every feature ships with a prototype the team can click through before engineering commits.",
+        title: "Workflow optimisation first. UI second.",
+        body: "We led with operational thinking: which actions happen 50 times a day, and how do we make those one tap? Cognitive load on enterprise dashboards was reduced by promoting a small set of recurring tasks and demoting everything else into searchable inventory. The design system was scoped from the start to support multi-user hierarchies, marketplace integrations, and bulk-edit patterns — so growth wouldn't mean rebuilding.",
       },
       {
         eyebrow: "04 · Outcome",
-        title: "Seller and logistics flows shipping on a predictable cadence.",
-        body: "Complex B2B workflows — previously distributed across spreadsheets and legacy tools — are now consolidated into scalable, interconnected modules. The design system is the throughline: new modules reach production faster because patterns, tokens, and behaviour are already defined.",
+        title: "A scalable seller layer that other commerce ecosystems plug into.",
+        body: "The platform now manages product catalogs, pricing, and order workflows across ONDC and major marketplaces, with multi-user operations under a single account. The design system has become the throughline — new modules ship faster because the patterns and tokens are already defined, and operational teams adopt the platform without long retraining cycles.",
       },
     ],
     reflection:
-      "Enterprise commerce design rewards restraint. Every extra click costs a real business real money, and the job is almost always to take features away, not add them.",
+      "When you design for users with low digital literacy at enterprise scale, every click you remove is multiplied by thousands.",
   },
   {
-    slug: "aig-mitr",
-    title: "AIG Mitr",
+    slug: "aig-mitra",
+    title: "AIG Mitra App",
     tagline:
       "A patient-first mobile companion for one of India's leading hospitals",
     description:
-      "End-to-end mobile app for AIG Hospitals: multi-profile login, medical record vault, real-time report tracking, appointment booking, and prescription management — designed under ABHA and WCAG compliance.",
+      "End-to-end mobile app for AIG Hospitals: appointment booking, doctor discovery, health packages, prescriptions, FAQs, and a chatbot triage layer — designed under ABHA and WCAG compliance.",
     role: "Lead Product Designer",
     year: "2024",
     client: "AIG Hospitals",
-    stack: ["Figma", "ABHA", "WCAG 2.1 AA", "iOS / Android"],
-    cover: "/images/projects/aig-mitr-cover.jpg",
+    stack: ["Figma", "ABHA / ABDM", "WCAG 2.1 AA", "iOS / Android"],
+    cover: "/images/projects/aig-mitra-cover.jpg",
     accent: "#2E6BE8",
     featured: true,
     outcome:
-      "Shipped to iOS + Android with ABHA compliance on launch",
+      "Shipped to iOS + Android with ABHA compliance from day one",
     sections: [
       {
         eyebrow: "01 · Context",
-        title: "Healthcare apps fail when they forget they're being used at 3am.",
-        body: "AIG Hospitals needed a patient companion app that unified appointment booking, records, reports, and prescriptions into one place. The brief was deceptively simple — until you realised patients using it were often anxious, medicated, or managing records for elderly relatives. We had to design for a worst-case user context, not a best-case one.",
+        title: "Hospitals are big places. The companion app should make them feel small.",
+        body: "AIG Mitra is the patient companion app for AIG Hospitals — appointment booking, doctor discovery, health packages, prescriptions, FAQs, and a chatbot that handles the questions humans get tired of answering. Patients arrive anxious; the app's job is to lower the anxiety, not add to it.",
       },
       {
         eyebrow: "02 · Discovery & Research",
-        title: "Regulation as a forcing function for better design.",
-        body: "ABHA (India's digital health framework) and WCAG 2.1 AA weren't checkboxes — they were the foundation. We mapped existing patient journeys across clinics, studied ABHA's consent architecture, and audited competitor apps for the mistakes to avoid.",
+        title: "Designing for stress, not for the showcase.",
+        body: "Patient research focused on the actual moments people open a hospital app: needing an appointment, looking for a doctor, trying to understand a package, or asking a question they couldn't get answered at the front desk. Multi-profile login was reframed as a 'household' — caregivers managing records for elderly relatives are first-class users, not edge cases.",
         bullets: [
-          "Journey mapping across appointment booking, diagnostics, and post-visit care",
-          "Multi-profile modelling for caregivers managing family records",
-          "Accessibility audit with contrast, touch targets, and screen-reader paths defined upfront",
+          "Patient journey mapping across booking, visits, diagnostics, and follow-up",
+          "Multi-profile / household modelling with explicit consent trails",
+          "Accessibility audit — contrast, type sizing, and screen-reader paths set as defaults",
+          "Chatbot scope-setting: what it answers, what it routes to a human team",
         ],
       },
       {
         eyebrow: "03 · Approach",
         title: "Big type. High contrast. Forgiving flows.",
-        body: "The visual system leans on generous typography, strong contrast, and reduced chrome so information surfaces fast. Every destructive or irreversible action gets a confirm state. Multi-profile login was reframed as a 'household' — one account, multiple patients, explicit permission trails per record.",
+        body: "Information surfaces fast: clear typography, generous spacing, and minimal chrome. Destructive or irreversible actions get a confirm state. The chatbot acts as a triage layer — handling FAQs and routing edge cases to the right human team, never pretending to be one.",
       },
       {
         eyebrow: "04 · Outcome",
-        title: "Shipped on both stores, fully ABHA-compliant.",
-        body: "The app launched on iOS and Android with ABHA integration complete at day one. Patient onboarding, record viewing, report tracking, and appointment management are all in production. Post-launch, the design system we built continued to serve additional AIG surfaces.",
+        title: "Shipped on iOS and Android, ABDM-compliant from day one.",
+        body: "The app launched with appointment booking, doctor discovery, health packages, and prescription access live. Post-launch, the design system that came out of this work continues to power additional AIG surfaces.",
       },
     ],
     reflection:
       "Working under healthcare constraints makes you a better designer in every other context. You stop decorating, you start engineering legibility.",
   },
   {
-    slug: "healthcare-design-system",
-    title: "Healthcare Design System",
-    tagline: "An ABHA-certified design system powering 40+ applications",
+    slug: "abdm-platforms",
+    title: "ABDM Platforms · Achala Health Services",
+    tagline:
+      "An ABDM-aligned hospital ecosystem — patient, clinical, claims, and AI modules on one design foundation",
     description:
-      "Built a scalable design system tailored for healthcare — accessibility-first components, clinical data patterns, and ABHA-compliant flows — used across AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster hospital groups.",
-    role: "Design Systems Lead",
+      "Led design across an ABDM-aligned platform suite at Achala Health Services — patient and doctor modules, claims and insurance management, AI radiology, DICOM viewer, AI discharge summaries, IoT patient tracking, and the multi-level CRM tying them together.",
+    role: "Senior Product Designer · Design Systems Lead",
     year: "2023 — 2025",
-    client: "Achala IT Solutions",
-    stack: ["Figma Libraries", "Tokens", "ABHA", "Accessibility"],
-    cover: "/images/projects/design-system-cover.jpg",
+    client: "Achala Health Services",
+    stack: ["Figma", "Design System", "ABDM", "AI / Healthcare"],
+    cover: "/images/projects/abdm-cover.jpg",
     accent: "#5C7F6A",
     featured: true,
-    outcome: "40+ products shipped on a shared foundation",
+    outcome:
+      "ABDM-aligned platform suite running across AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster",
     sections: [
       {
         eyebrow: "01 · Context",
-        title: "Forty hospital apps, one team, zero margin for drift.",
-        body: "Achala IT Solutions delivers enterprise software to some of India's most established hospital groups — AIG, KIMS, Kamineni, Continental, Nephroplus, Aster. Every product was being designed in isolation, which meant every regression had to be re-fought. I was brought in to lead a unified design system that would make scale possible without compromising the specificity clinical contexts demand.",
+        title: "Hospital software is allowed to be slow. It's not allowed to be confusing.",
+        body: "At Achala Health Services I led design across an ABDM-aligned ecosystem powering hospitals across India — patient modules, doctor modules, claims and insurance management, AI radiology, DICOM viewer, AI-assisted discharge summaries, IoT patient tracking, bed management, and the multi-level CRM that ties them together. The brief was scale: hundreds of staff, thousands of patients, dozens of operational roles, all running through the same platform.",
       },
       {
         eyebrow: "02 · Discovery & Research",
-        title: "Auditing every screen, then designing the rules.",
-        body: "The first three months were ethnographic, not prescriptive — I audited existing products, interviewed engineers about what broke, and documented the component proliferation. We catalogued 200+ unique button variants before we wrote a single token.",
+        title: "One platform, many shifts of users — none of them tolerant of friction.",
+        body: "Discovery meant sitting with hospital ops teams, branch admins, claims processors, doctors, radiologists, and patients to understand what their day actually looks like. Operational dependencies were the hardest part — a delay in one role's screen cascades into ten others'.",
         bullets: [
-          "Component inventory across 40+ live applications",
-          "Engineering interviews to map pain points in handoff and drift",
-          "Clinical workflow mapping — chart review, orders, notes, imaging",
-          "Accessibility and ABHA requirement catalogue as non-negotiable foundations",
+          "Stakeholder mapping across facility admin, branch admin, doctor, staff, and patient roles",
+          "Workflow analysis for claims, insurance, discharge, and AI-assisted clinical touchpoints",
+          "ABDM compliance audit — consent flows, ABHA-linked records, data exchange patterns",
+          "Multi-level facility, branch, and department hierarchy modelling",
         ],
       },
       {
         eyebrow: "03 · Approach",
-        title: "Tokens first. Components second. Patterns last.",
-        body: "The system builds outward: a constrained palette of tokens (color, type, spacing, motion) that enforce accessibility by default, a library of primitive components (input, button, card, dialog) that compose predictably, and pattern libraries for clinical workflows (patient header, vitals card, orders table, consent dialog). Every pattern ships with dos/don'ts and real hospital examples.",
+        title: "Role-specific UX. Shared design foundation.",
+        body: "Each role got a workspace tuned to its day — but they all spoke the same visual language. AI assistants were designed as collaborators, not magic boxes: every AI output (radiology suggestions, discharge summaries) was paired with a clear human-review pattern. Compliance with ABDM was treated as a default of the design system, not a per-screen scramble.",
       },
       {
         eyebrow: "04 · Outcome",
-        title: "A shared foundation across seven hospital groups.",
-        body: "The system now governs 40+ applications across AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster. New products reach production meaningfully faster because foundational decisions are already made. Accessibility and ABHA compliance move from a per-project scramble to a default.",
+        title: "An ABDM-aligned hospital ecosystem running across multiple groups.",
+        body: "The platform now serves hospitals like AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster — supporting patient, clinical, claims, and AI-assisted workflows on a single foundation. The design system has become the contract: new modules ship on it, older ones converge to it, and accessibility and ABDM compliance move from per-project scrambles into defaults.",
       },
     ],
     reflection:
-      "Design systems don't succeed because the tokens are perfect. They succeed because the people using them trust that someone thought about their edge case first.",
+      "Healthcare design rewards the unfashionable virtues — patience, clarity, and a refusal to confuse anyone, ever.",
+  },
+  {
+    slug: "qwipo-buyer-app",
+    title: "Qwipo Buyer App",
+    tagline:
+      "One app for retailers to buy from every distributor — live on iOS and Android",
+    description:
+      "A B2B retail commerce app that lets retailers compare pricing, place multi-seller orders, track deliveries, and access credit — replacing the fragmented stack of brand-specific apps like ITC Unnati and HUL Shikhar.",
+    role: "Senior Product Designer",
+    year: "2025 — Present",
+    client: "Qwipo",
+    stack: ["Figma", "Mobile-first", "B2B", "iOS / Android"],
+    cover: "/images/projects/qwipo-buyer-cover.jpg",
+    accent: "#F39B5A",
+    featured: true,
+    outcome:
+      "Live on Play Store and App Store, replacing the multi-app retailer stack",
+    sections: [
+      {
+        eyebrow: "01 · Context",
+        title: "Retailers shouldn't need fifteen apps to buy from fifteen distributors.",
+        body: "Most Indian retailers source from a handful of brands and distributors — which historically meant juggling apps like ITC Unnati, HUL Shikhar, and a dozen distributor-specific ones, each with its own login, catalogue, and quirks. Qwipo Buyer is the alternative: one app to compare, order, and track from every distributor a retailer works with.",
+      },
+      {
+        eyebrow: "02 · Discovery & Research",
+        title: "Designing for one-handed mobile use under time pressure.",
+        body: "Retailers don't browse — they buy. The mobile context is busy: a counter, a customer waiting, a phone in one hand. Research focused on the moments retailers actually open the app — morning restocks, mid-day urgent orders, end-of-day reconciliation.",
+        bullets: [
+          "Retailer purchasing-cycle interviews across geographies",
+          "Friction audits on existing distributor apps to identify recurring pain points",
+          "Schemes, offers, and trust signals that drive buying decisions",
+          "Credit, payments, and partner integrations mapped into the buying flow",
+        ],
+      },
+      {
+        eyebrow: "03 · Approach",
+        title: "Compress every flow into the smallest number of taps that still feels safe.",
+        body: "Product discovery uses unified search across distributors with transparent pricing and scheme visibility. A multi-seller cart lets retailers stack orders from different distributors in one checkout. Trust is baked in — clear delivery promises, payment options, and credit-partner visibility on every order.",
+      },
+      {
+        eyebrow: "04 · Outcome",
+        title: "Live on Play Store and App Store, replacing the app stack.",
+        body: "Retailers now place multi-distributor orders from a single screen, with tracking and credit access in the same flow. Onboarding has been tuned for retailers with varying device experience, and the buyer side now plugs cleanly into the seller and logistics platforms.",
+      },
+    ],
+    reflection:
+      "B2B mobile is a different game from B2C. Speed wins, decoration loses.",
+  },
+  {
+    slug: "nephroplus-guest",
+    title: "NephroPlus Guest App",
+    tagline:
+      "A long-term care companion for dialysis patients across India and the Philippines",
+    description:
+      "Patient-focused mobile app for nephrology and dialysis patients — appointment booking, rewards, education, food and exercise guidance, blogs, and a moderated community timeline. Designed for the recurring rhythm of long-term care.",
+    role: "Senior Product Designer",
+    year: "2024",
+    client: "NephroPlus",
+    stack: ["Figma", "Mobile", "Healthcare", "International"],
+    cover: "/images/projects/nephroplus-cover.jpg",
+    accent: "#4A8B7C",
+    featured: false,
+    outcome:
+      "Live across India and the Philippines for dialysis patient communities",
+    sections: [
+      {
+        eyebrow: "01 · Context",
+        title: "A healthcare app that doesn't feel like a healthcare app.",
+        body: "NephroPlus Guest is the patient companion for nephrology and dialysis patients across India and the Philippines — appointments, rewards, education, food and exercise guidance, and a moderated community timeline. These are people who interact with the healthcare system on a recurring schedule, often for years. The product has to be useful and emotionally tolerable — not just functional.",
+      },
+      {
+        eyebrow: "02 · Discovery & Research",
+        title: "Designing for long-term care, not single transactions.",
+        body: "Most healthcare apps are built around the visit. Dialysis patients live around the visit — three sessions a week, every week. Research focused on the emotional pattern of recurring care: what the app should do on a tough day, what it should do on a good one, and what it should never do.",
+        bullets: [
+          "Patient interviews across age bands and disease severity",
+          "Behavioural patterns around adherence, motivation, and burnout",
+          "Reward and engagement systems that don't feel patronising",
+          "Community moderation and safety considerations for the social timeline",
+        ],
+      },
+      {
+        eyebrow: "03 · Approach",
+        title: "Calm interface. Supportive structure. Optional engagement.",
+        body: "Visual treatment is intentionally low-arousal — soft typography, breathable spacing, no urgent reds. Engagement features (rewards, social, education) are opt-in and never block care features. Booking and clinical functions are always one tap away, no matter where you are in the app.",
+      },
+      {
+        eyebrow: "04 · Outcome",
+        title: "An international care companion for a population that needed one.",
+        body: "The app now supports patients across India and the Philippines, with appointment, rewards, education, and community modules in production. The design system has been extended to additional NephroPlus surfaces.",
+      },
+    ],
+    reflection:
+      "Long-term healthcare design isn't about adding features. It's about subtracting friction one day at a time, for years.",
+  },
+  {
+    slug: "picc-mobile",
+    title: "PICC Mobile Application",
+    tagline:
+      "Turning a desktop community platform into something useful in the room",
+    description:
+      "Reimagined the PICC community platform for mobile — digital voting, board-member elections, QR-driven event surveys, member engagement, and live community interaction designed for short-attention contexts at events.",
+    role: "Senior Product Designer",
+    year: "2024",
+    client: "PICC",
+    stack: ["Figma", "Mobile", "Civic / Community"],
+    cover: "/images/projects/picc-cover.jpg",
+    accent: "#6B5BD9",
+    featured: false,
+    sections: [
+      {
+        eyebrow: "01 · Context",
+        title: "Turning a desktop platform into something useful at an event.",
+        body: "PICC operates a community platform for organisational engagement, board-member elections, event participation, and digital voting. The web platform worked; the mobile experience didn't exist. The brief was to take a desktop-first system and make it useful in the room — at an event, on a phone, mid-conversation.",
+      },
+      {
+        eyebrow: "02 · Discovery & Research",
+        title: "Mobile isn't 'web on a phone'. Especially during a live event.",
+        body: "Research focused on what people actually do at events: voting between sessions, participating in surveys via QR codes, checking schedules, finding people. Attention is short, hands are full, and patience for confusing UI is zero.",
+        bullets: [
+          "Live-event interaction patterns across age bands",
+          "QR-driven participation flows for surveys and votes",
+          "Voting interaction design — confirmation, transparency, error handling",
+          "Notification and timing patterns aligned with event schedules",
+        ],
+      },
+      {
+        eyebrow: "03 · Approach",
+        title: "Fast paths for the moment. Discoverable depth for the rest of the day.",
+        body: "Voting, QR participation, and event schedules are surfaced as ambient primary actions — visible the moment the app opens, not three taps deep. Member directory, history, and admin features sit one layer below, accessible but never in the way of the live moment.",
+      },
+      {
+        eyebrow: "04 · Outcome",
+        title: "Higher engagement during events, lower friction across them.",
+        body: "Members now participate in elections, surveys, and event flows from their phones in seconds, not minutes. Voting and survey completion rates rose, and the desktop platform became a backstage tool while mobile became the live face of the organisation.",
+      },
+    ],
+    reflection:
+      "Mobile design at events is a study in attention economics. You get one sliver of someone's focus — make it count.",
   },
   {
     slug: "flytta",
@@ -171,19 +316,19 @@ export const projects: Project[] = [
     stack: ["Brand", "Mobile", "Web", "Mentorship"],
     cover: "/images/projects/flytta-cover.jpg",
     accent: "#C96E4C",
-    featured: true,
+    featured: false,
     outcome:
-      "Shipped brand identity and product across mobile and web",
+      "Shipped brand identity and product across mobile and web for two years",
     sections: [
       {
         eyebrow: "01 · Context",
         title: "A mobility startup finding its voice alongside its product.",
-        body: "Flytta Innovations needed both a recognisable brand and a shippable product at the same time — a common startup dilemma where brand work and product work compete for the same airtime. I led both tracks, treating the brand as the operating system the product would live on.",
+        body: "Flytta Innovations needed both a recognisable brand and a shippable product at the same time — the common startup dilemma where brand work and product work compete for the same airtime. I led both tracks, treating the brand as the operating system the product would live on.",
       },
       {
         eyebrow: "02 · Discovery & Research",
         title: "Brand as product decision, not marketing decoration.",
-        body: "The brand system — identity, tone, visual language — was designed as a set of decisions the product team could live with. We wrote brand guidelines that specified behaviour (how buttons animate, how errors sound) rather than just logos and colours.",
+        body: "The brand system — identity, tone, visual language — was designed as a set of decisions the product team could live with. Brand guidelines specified behaviour (how buttons animate, how errors sound), not just logos and colours.",
         bullets: [
           "Identity, type system, and illustration language",
           "Product UI on mobile and web, mapped to the brand foundation",
@@ -199,7 +344,7 @@ export const projects: Project[] = [
       {
         eyebrow: "04 · Outcome",
         title: "Brand and product shipping in lockstep for two years.",
-        body: "Over two years, the brand evolved with the product across mobile apps, web surfaces, and marketing collateral — held together by guidelines that other designers could extend without me in the room. The mentorship component meant design throughput scaled with team size, not designer size.",
+        body: "Over two years the brand evolved with the product across mobile apps, web surfaces, and marketing collateral — held together by guidelines that other designers could extend without me in the room. The mentorship component meant design throughput scaled with team size, not designer size.",
       },
     ],
     reflection:
