@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
+import { PortraitImage } from "@/components/portrait-image";
 
 export const metadata: Metadata = {
   title: "About",
@@ -100,18 +101,21 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-4">
               <Reveal>
-                <div className="aspect-[4/5] w-full overflow-hidden rounded-3xl relative">
+                <div className="aspect-[4/5] w-full overflow-hidden rounded-3xl relative bg-[linear-gradient(160deg,#e85d2e_0%,#c94a20_45%,#1a0f0a_100%)]">
+                  <PortraitImage
+                    sizes="(min-width: 768px) 320px, 100vw"
+                    priority
+                  />
                   <div
-                    className="absolute inset-0"
+                    className="absolute inset-0 pointer-events-none"
                     style={{
                       background:
-                        "linear-gradient(160deg, #e85d2e 0%, #c94a20 45%, #1a0f0a 100%)",
+                        "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.6) 100%)",
                     }}
                   />
-                  <div className="absolute inset-0 opacity-20 mix-blend-overlay [background-image:radial-gradient(circle_at_30%_40%,white,transparent_50%)]" />
                   <div className="absolute bottom-6 left-6 right-6">
                     <p className="font-display text-white text-3xl">Vikas.</p>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 mt-2">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/80 mt-2">
                       Hyderabad, India · 2026
                     </p>
                   </div>

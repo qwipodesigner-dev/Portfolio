@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Container } from "../layout/container";
 import { Reveal } from "../reveal";
+import { PortraitImage } from "../portrait-image";
 
 export function AboutSnippet() {
   return (
@@ -20,29 +21,31 @@ export function AboutSnippet() {
               </span>
             </Reveal>
 
-            {/* Stylized portrait block — replace with real photo later */}
             <Reveal delay={0.1}>
               <motion.div
-                className="relative mt-8 aspect-[4/5] w-full max-w-sm overflow-hidden rounded-3xl border border-border"
+                className="relative mt-8 aspect-[4/5] w-full max-w-sm overflow-hidden rounded-3xl border border-border bg-[linear-gradient(160deg,#e85d2e_0%,#c94a20_45%,#1a0f0a_100%)]"
                 whileHover={{ scale: 1.015 }}
                 transition={{ duration: 0.4 }}
               >
+                <PortraitImage
+                  sizes="(min-width: 768px) 384px, 100vw"
+                  priority
+                />
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-0 pointer-events-none"
                   style={{
                     background:
-                      "linear-gradient(160deg, #e85d2e 0%, #c94a20 45%, #1a0f0a 100%)",
+                      "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.55) 100%)",
                   }}
                 />
-                <div className="absolute inset-0 opacity-20 mix-blend-overlay [background-image:radial-gradient(circle_at_30%_40%,white,transparent_50%)]" />
                 <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
                   <div>
                     <p className="font-display text-white text-2xl">Vikas M.</p>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70 mt-1">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/80 mt-1">
                       Hyderabad, IN
                     </p>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/80">
                     2026
                   </span>
                 </div>
