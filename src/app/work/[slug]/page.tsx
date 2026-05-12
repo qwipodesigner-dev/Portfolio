@@ -173,17 +173,21 @@ export default async function CaseStudyPage({
               </blockquote>
             </Reveal>
           )}
+        </Container>
 
-          {project.liveUrl && (
+        {project.liveUrl && (
+          <Container size="lg" className="mt-16 md:mt-20">
             <EmbedPreview
               url={project.liveUrl}
               heading="See it in production."
-              caption="The live seller platform — try the flows, poke at the screens. For full-screen interaction, open in a new tab."
+              caption="The live seller platform rendered at desktop dimensions — try the flows, poke at the screens. Open in a new tab for full-screen interaction."
             />
-          )}
+          </Container>
+        )}
 
+        <Container size="sm" className="mt-16 md:mt-20">
           <Reveal delay={0.5}>
-            <div className="mt-20 pt-10 border-t border-border flex flex-wrap items-center justify-between gap-6">
+            <div className="pt-10 border-t border-border flex flex-wrap items-center justify-between gap-6">
               <p className="font-mono text-xs uppercase tracking-[0.22em] text-fg-subtle max-w-md">
                 Want a walkthrough with real screens and metrics? Reach out — I&apos;m
                 happy to share more under a short call.

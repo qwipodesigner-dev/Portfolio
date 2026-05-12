@@ -1,27 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Reveal } from "./reveal";
 
 type Props = {
   url: string;
   heading?: string;
   caption?: string;
+  /** Width to render the iframe at — the embedded app sees this as its viewport
+   *  width, so set high enough that the app renders its desktop layout. */
+  desktopWidth?: number;
+  /** Height to render the iframe at — sets the visible vertical area. */
+  desktopHeight?: number;
 };
 
 /**
- * Embedded live-app preview with a faux browser chrome on top and the
- * target URL rendered inside an iframe. The whole tile is interactive —
- * users can click into the embedded app — and a top-right action opens
- * the URL in a new tab for full-screen exploration.
+ * Embedded live-app preview.
+ *
+ * Renders the target URL inside an iframe at fixed desktop dimensions
+ * (1440×900 by default) and uses CSS transform to scale the iframe down
+ * to fit whatever container it's mounted in. The embedded app sees a
+ * desktop-sized viewport and renders its full desktop layout — no
+ * responsive / mobile fallbacks.
+ *
+ * A faux browser chrome sits above the iframe with traffic-light dots,
+ * the URL, and an "open in new tab" affordance.
  */
-export function EmbedPreview({ url, heading, caption }: Props) {
+export function EmbedPreview({
+  url,
+  heading,
+  caption,
+  desktopWidth = 1440,
+  desktopHeight = 900,
+}: Props) {
   const [loaded, setLoaded] = useState(false);
+  const [scale, setScale] = useState(1);
+  const frameRef = useRef<HTMLDivElement>(null);
   const displayUrl = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const updateScale = () => {
+      // Cap at 1 — don't upscale beyond native desktop size
+      const next = Math.min(1, el.clientWidth / desktopWidth);
+      setScale(next);
+    };
+    updateScale();
+    const ro = new ResizeObserver(updateScale);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [desktopWidth]);
+
+  // Visible height is the scaled iframe height — keeps the container shrink-wrapped
+  const visibleHeight = desktopHeight * scale;
 
   return (
     <Reveal delay={0.45}>
-      <div className="mt-20 pt-16 border-t border-border">
+      <div>
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div className="flex-1 min-w-0">
             <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
@@ -82,8 +118,12 @@ export function EmbedPreview({ url, heading, caption }: Props) {
             </a>
           </div>
 
-          {/* Live iframe */}
-          <div className="relative aspect-[16/10] bg-bg">
+          {/* Live iframe — rendered at desktop dimensions, scaled to fit */}
+          <div
+            ref={frameRef}
+            className="relative bg-bg overflow-hidden"
+            style={{ height: `${visibleHeight}px` }}
+          >
             {!loaded && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="flex flex-col items-center gap-3">
@@ -96,7 +136,13 @@ export function EmbedPreview({ url, heading, caption }: Props) {
             )}
             <iframe
               src={url}
-              className="absolute inset-0 w-full h-full"
+              className="absolute top-0 left-0 border-0"
+              style={{
+                width: `${desktopWidth}px`,
+                height: `${desktopHeight}px`,
+                transform: `scale(${scale})`,
+                transformOrigin: "top left",
+              }}
               onLoad={() => setLoaded(true)}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -107,7 +153,8 @@ export function EmbedPreview({ url, heading, caption }: Props) {
         </div>
 
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-fg-subtle mt-4">
-          Embedded live · Click anywhere inside to interact
+          Embedded live · Rendered at {desktopWidth}×{desktopHeight} desktop ·
+          Click anywhere inside to interact
         </p>
       </div>
     </Reveal>
