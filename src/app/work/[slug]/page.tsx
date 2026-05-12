@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
+import { EmbedPreview } from "@/components/embed-preview";
 import { getProjectBySlug, projects } from "@/lib/projects";
 
 type Params = { slug: string };
@@ -171,6 +172,14 @@ export default async function CaseStudyPage({
                 </p>
               </blockquote>
             </Reveal>
+          )}
+
+          {project.liveUrl && (
+            <EmbedPreview
+              url={project.liveUrl}
+              heading="See it in production."
+              caption="The live seller platform — try the flows, poke at the screens. For full-screen interaction, open in a new tab."
+            />
           )}
 
           <Reveal delay={0.5}>

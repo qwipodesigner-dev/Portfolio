@@ -20,6 +20,8 @@ export type Project = {
   outcome?: string;
   sections: CaseStudySection[];
   reflection?: string;
+  /** Optional live URL for the project — embedded as an iframe preview below the reflection */
+  liveUrl?: string;
 };
 
 export const projects: Project[] = [
@@ -39,6 +41,7 @@ export const projects: Project[] = [
     featured: true,
     outcome:
       "ONDC-aligned seller platform powering distributor and DMS operations",
+    liveUrl: "https://seller-store-nine.vercel.app/login",
     sections: [
       {
         eyebrow: "01 · Context",
