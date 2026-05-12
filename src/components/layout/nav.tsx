@@ -48,10 +48,7 @@ export function Nav() {
           <span className="relative inline-block h-2 w-2 rounded-full bg-accent">
             <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-40" />
           </span>
-          Vikas
-          <span className="text-fg-muted font-sans text-sm group-hover:text-fg transition-colors">
-            / Mittapalli
-          </span>
+          Vikas Mittapalli
         </Link>
 
         <ul className="hidden md:flex items-center gap-1">
