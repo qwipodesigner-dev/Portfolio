@@ -24,7 +24,12 @@ function DesignComposition() {
   const wireColor = resolvedTheme === "dark" ? "#f2f2ee" : "#0a0a0a";
 
   return (
-    <group>
+    // Scale balances 'big and present in the hero' with 'doesn't get
+    // cropped when OrbitControls rotates through wider angles'. The
+    // composition's outer extent (cage + satellite rings) is ~3 units;
+    // 0.85 gives strong on-screen presence while keeping everything in
+    // frame for the rotation range the polar limits allow.
+    <group scale={0.85}>
       {/* Central rounded cube — primary system form */}
       <Float speed={1.2} rotationIntensity={0.4} floatIntensity={0.5}>
         <RoundedBox args={[1.3, 1.3, 1.3]} radius={0.18} smoothness={4}>
@@ -194,7 +199,7 @@ export function Hero3D() {
     <div ref={containerRef} className="relative w-full h-full" aria-hidden="true">
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [0, 0, 5.5], fov: 38 }}
+        camera={{ position: [0, 0, 6], fov: 42 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
         // Click anywhere on the canvas (without dragging) gives the

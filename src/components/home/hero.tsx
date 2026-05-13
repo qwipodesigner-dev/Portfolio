@@ -58,16 +58,21 @@ export function Hero() {
       {/* subtle grid texture — sits behind everything */}
       <div className="absolute inset-0 -z-10 opacity-[0.04] [background-image:linear-gradient(to_right,var(--color-fg)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-fg)_1px,transparent_1px)] [background-size:48px_48px]" />
 
-      {/* 3D canvas — desktop only: absolute on the right side.
-          Mobile renders a stacked instance below the copy (see further down). */}
-      <div className="hidden md:block absolute inset-y-0 right-0 md:w-[45%] lg:w-[42%] md:h-full md:top-0 md:pr-4 lg:pr-8 pointer-events-auto opacity-90">
+      {/* 3D canvas — desktop only: absolute on the right side, widened to
+          give the cube real presence in the hero. Mobile renders a stacked
+          instance below the copy (see further down). */}
+      <div className="hidden md:block absolute inset-y-0 right-0 md:w-[52%] lg:w-[50%] md:h-full md:top-0 md:pr-4 lg:pr-8 pointer-events-auto opacity-95">
         <Hero3D />
       </div>
 
-      <Container className="relative z-10">
+      {/* Container is pointer-events-none so the empty space on the right
+          (outside the text column) passes pointer events through to the
+          absolutely-positioned 3D canvas behind it. Interactive children
+          (text column, mobile 3D block) re-enable pointer-events-auto. */}
+      <Container className="relative z-10 pointer-events-none">
         <div className="flex flex-col gap-10 md:grid md:grid-cols-12 md:gap-8 md:items-center md:min-h-[82vh] pt-6 md:pt-12">
           {/* Copy column */}
-          <div className="md:col-span-8 lg:col-span-7 flex flex-col gap-6 md:gap-8">
+          <div className="md:col-span-8 lg:col-span-7 flex flex-col gap-6 md:gap-8 pointer-events-auto">
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
