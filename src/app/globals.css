@@ -131,7 +131,7 @@
 }
 
 /* ===========================================================
-   Accessibility
+   Accessibility — respect prefers-reduced-motion
    =========================================================== */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -142,4 +142,115 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ===========================================================
+   Accessibility widget — applied via html.a11y-* classes.
+   Everything is scoped to exclude [data-a11y="ignore"] so the
+   widget's own panel + launcher stay unaffected by the user's
+   chosen overrides.
+   =========================================================== */
+
+/* Text size — zoom direct body children, never the widget itself */
+html.a11y-text-down body > *:not([data-a11y="ignore"]) { zoom: 0.9; }
+html.a11y-text-1 body > *:not([data-a11y="ignore"]) { zoom: 1.1; }
+html.a11y-text-2 body > *:not([data-a11y="ignore"]) { zoom: 1.2; }
+html.a11y-text-3 body > *:not([data-a11y="ignore"]) { zoom: 1.3; }
+
+/* Text spacing */
+html.a11y-spacing-1 body :not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  letter-spacing: 0.04em !important;
+  word-spacing: 0.1em !important;
+}
+html.a11y-spacing-2 body :not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  letter-spacing: 0.08em !important;
+  word-spacing: 0.2em !important;
+}
+html.a11y-spacing-3 body :not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  letter-spacing: 0.14em !important;
+  word-spacing: 0.3em !important;
+}
+
+/* Line height */
+html.a11y-line-1 body :not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  line-height: 1.6 !important;
+}
+html.a11y-line-2 body :not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  line-height: 2 !important;
+}
+html.a11y-line-3 body :not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  line-height: 2.6 !important;
+}
+
+/* Dyslexia Friendly — swap to Lexend (research-backed readability font) */
+html.a11y-dyslexia body :not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  font-family: var(--font-lexend), system-ui, sans-serif !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Saturation */
+html.a11y-sat-low body > *:not([data-a11y="ignore"]) { filter: saturate(0.5); }
+html.a11y-sat-high body > *:not([data-a11y="ignore"]) { filter: saturate(1.8); }
+html.a11y-sat-gray body > *:not([data-a11y="ignore"]) { filter: saturate(0); }
+
+/* Invert Colors — invert everything, then re-invert media so images stay correct */
+html.a11y-invert body > *:not([data-a11y="ignore"]) {
+  filter: invert(1) hue-rotate(180deg);
+}
+html.a11y-invert body img:not([data-a11y="ignore"] img),
+html.a11y-invert body video:not([data-a11y="ignore"] video),
+html.a11y-invert body canvas:not([data-a11y="ignore"] canvas) {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Highlight Links */
+html.a11y-highlight-links body a:not([data-a11y="ignore"] a) {
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 2px !important;
+  font-weight: 700 !important;
+  background-color: color-mix(in oklab, var(--color-accent) 22%, transparent) !important;
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: 2px !important;
+  border-radius: 3px;
+}
+
+/* Bigger Cursor */
+html.a11y-cursor,
+html.a11y-cursor *:not([data-a11y="ignore"]):not([data-a11y="ignore"] *) {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='42' height='42' viewBox='0 0 24 24' fill='%23e85d2e' stroke='white' stroke-width='1.5' stroke-linejoin='round'><path d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'/></svg>") 4 4,
+    auto !important;
+}
+
+/* Pause Animation — kill every animation/transition globally */
+html.a11y-pause *,
+html.a11y-pause *::before,
+html.a11y-pause *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Hide Images — also hides the 3D canvas */
+html.a11y-hide-images body img:not([data-a11y="ignore"] img),
+html.a11y-hide-images body picture:not([data-a11y="ignore"] picture),
+html.a11y-hide-images body video:not([data-a11y="ignore"] video),
+html.a11y-hide-images body canvas:not([data-a11y="ignore"] canvas),
+html.a11y-hide-images body svg:not([data-a11y="ignore"]):not([data-a11y="ignore"] svg) {
+  display: none !important;
+}
+
+/* Text-to-speech mode — visual cue: text gets a subtle hover treatment */
+html.a11y-tts body p:hover:not([data-a11y="ignore"] p),
+html.a11y-tts body h1:hover:not([data-a11y="ignore"] h1),
+html.a11y-tts body h2:hover:not([data-a11y="ignore"] h2),
+html.a11y-tts body h3:hover:not([data-a11y="ignore"] h3),
+html.a11y-tts body li:hover:not([data-a11y="ignore"] li) {
+  outline: 1px dashed var(--color-accent);
+  outline-offset: 4px;
+  cursor: pointer;
 }

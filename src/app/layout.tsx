@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono, Lexend } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
-import { AccessibilityWidget } from "@/components/accessibility-widget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,6 +22,14 @@ const fraunces = Fraunces({
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Loaded but not applied by default — only kicks in when the
+// accessibility widget enables Dyslexia Friendly mode.
+const lexend = Lexend({
+  variable: "--font-lexend",
   subsets: ["latin"],
   display: "swap",
 });
@@ -79,7 +86,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${lexend.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-bg text-fg font-sans">
         <Providers>
@@ -89,7 +96,6 @@ export default function RootLayout({
         </Providers>
         <Analytics />
         <SpeedInsights />
-        <AccessibilityWidget />
       </body>
     </html>
   );
