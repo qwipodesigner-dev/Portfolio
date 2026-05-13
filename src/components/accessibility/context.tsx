@@ -235,10 +235,28 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       const select =
         document.querySelector<HTMLSelectElement>(".goog-te-combo");
       if (!select) return false;
-      // English = restore to original by setting empty value (or 'en')
-      const target = settings.language === "en" ? "" : settings.language;
-      if (select.value !== target) {
-        select.value = target;
+
+      // Restoring English: Google Translate Element can't cleanly undo an
+      // in-place translation via the select alone. Clear its cookies and
+      // reload so the page reflows as the original English content.
+      if (settings.language === "en") {
+        const current = select.value;
+        const isTranslated = !!current && current !== "" && current !== "en";
+        if (isTranslated) {
+          const host = window.location.hostname;
+          const expiry = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          document.cookie = `googtrans=; path=/; ${expiry}`;
+          document.cookie = `googtrans=; path=/; domain=${host}; ${expiry}`;
+          document.cookie = `googtrans=; path=/; domain=.${host}; ${expiry}`;
+          window.location.reload();
+        }
+        return true;
+      }
+
+      // Switching between non-English languages: native select-driven change
+      // is enough, no reload needed.
+      if (select.value !== settings.language) {
+        select.value = settings.language;
         select.dispatchEvent(new Event("change"));
       }
       return true;
@@ -246,7 +264,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
 
     if (apply()) return;
 
-    // Google's select is injected async — poll briefly
+    // Google's select is injected async — poll briefly until it shows up
     let tries = 0;
     const interval = window.setInterval(() => {
       tries++;
