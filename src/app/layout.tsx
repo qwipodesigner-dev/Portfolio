@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
-import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
+import { AccessibilityWidget } from "@/components/accessibility-widget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -89,11 +89,7 @@ export default function RootLayout({
         </Providers>
         <Analytics />
         <SpeedInsights />
-        {/* UX4G Accessibility Widget — NeGD / MeitY, India */}
-        <Script
-          src="https://cdn.ux4g.gov.in/tools/accessibility-widget.js"
-          strategy="lazyOnload"
-        />
+        <AccessibilityWidget />
       </body>
     </html>
   );
