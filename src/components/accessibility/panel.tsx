@@ -6,10 +6,12 @@ import {
   AlignVerticalSpaceAround,
   BookOpen,
   Check,
+  ChevronDown,
   Contrast,
   Eye,
   EyeOff,
   Focus,
+  Languages,
   Link2,
   MousePointer2,
   Palette,
@@ -22,6 +24,7 @@ import {
 import { cn } from "@/lib/cn";
 import {
   DEFAULT_SETTINGS,
+  LANGUAGES,
   useAccessibility,
   type AccessibilitySettings,
   type SaturationLevel,
@@ -69,6 +72,15 @@ export function AccessibilityWidget() {
 
   return (
     <div data-a11y="ignore">
+      {/* Hidden mount point for Google Translate Element. Marked
+          data-a11y="ignore" so none of our accessibility transforms
+          apply to it. Off-screen so the user never sees its UI. */}
+      <div
+        id="google_translate_element"
+        aria-hidden="true"
+        className="fixed -left-[9999px] top-0 opacity-0 pointer-events-none"
+      />
+
       {/* Launcher button — universal access symbol, bold + clearly recognisable */}
       <motion.button
         type="button"
@@ -189,16 +201,21 @@ export function AccessibilityWidget() {
                 className="flex-1 overflow-y-auto overscroll-contain px-4 py-4"
                 data-lenis-prevent
               >
+                {/* Language — full width with inline dropdown, at the top */}
+                <LanguageTile />
+
                 {/* Text size — full width stepper */}
-                <Stepper
-                  label="Text Size"
-                  icon={<Type className="h-5 w-5" />}
-                  value={settings.textSizeStep}
-                  min={-1}
-                  max={3}
-                  format={(v) => `${100 + v * 10}%`}
-                  onChange={(v) => set("textSizeStep", v)}
-                />
+                <div className="mt-2">
+                  <Stepper
+                    label="Text Size"
+                    icon={<Type className="h-5 w-5" />}
+                    value={settings.textSizeStep}
+                    min={-1}
+                    max={3}
+                    format={(v) => `${100 + v * 10}%`}
+                    onChange={(v) => set("textSizeStep", v)}
+                  />
+                </div>
 
                 {/* Two-step rows */}
                 <div className="mt-3 grid grid-cols-2 gap-2">
@@ -351,6 +368,58 @@ export function AccessibilityWidget() {
           </>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/* ============================================================
+   Language tile — full width with inline dropdown
+   ============================================================ */
+
+function LanguageTile() {
+  const { settings, set } = useAccessibility();
+  const active = settings.language !== "en";
+  const current = LANGUAGES.find((l) => l.code === settings.language);
+
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border p-4 flex items-center gap-4 transition-colors",
+        active ? "border-accent bg-accent-soft" : "border-border bg-surface"
+      )}
+    >
+      <span
+        className={cn(
+          "flex h-9 w-9 flex-none items-center justify-center rounded-lg",
+          active ? "bg-accent text-white" : "bg-bg text-fg-muted"
+        )}
+      >
+        <Languages className="h-5 w-5" />
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="font-sans text-sm font-medium leading-tight">Language</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg-subtle mt-1 truncate">
+          {current?.name ?? "English"} · Google Translate
+        </p>
+      </div>
+      <div className="relative flex-none">
+        <select
+          value={settings.language}
+          onChange={(e) => set("language", e.target.value)}
+          aria-label="Select page language"
+          className={cn(
+            "appearance-none bg-bg border border-border rounded-full pl-4 pr-8 py-2 text-sm font-medium cursor-pointer",
+            "hover:border-fg/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          )}
+        >
+          {LANGUAGES.map((l) => (
+            <option key={l.code} value={l.code}>
+              {l.native}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-muted pointer-events-none" />
+      </div>
     </div>
   );
 }

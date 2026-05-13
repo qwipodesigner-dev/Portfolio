@@ -244,6 +244,30 @@ html.a11y-hide-images body svg:not([data-a11y="ignore"]):not([data-a11y="ignore"
   display: none !important;
 }
 
+/* ============================================================
+   Hide Google Translate Element's default UI.
+   We drive translation programmatically via our own dropdown
+   and don't want their banner / branding / floating tooltip.
+   ============================================================ */
+.skiptranslate,
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-text-highlight {
+  display: none !important;
+  visibility: hidden !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Google sometimes adds inline top margin to <body> to make room
+   for its translation banner. Force it back. */
+body {
+  top: 0 !important;
+}
+
 /* Text-to-speech mode — visual cue: text gets a subtle hover treatment */
 html.a11y-tts body p:hover:not([data-a11y="ignore"] p),
 html.a11y-tts body h1:hover:not([data-a11y="ignore"] h1),

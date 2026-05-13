@@ -12,6 +12,31 @@ import { MotionConfig } from "framer-motion";
 
 export type SaturationLevel = "normal" | "low" | "high" | "grayscale";
 
+export type Language = {
+  code: string;
+  name: string;
+  native: string;
+};
+
+/** Curated language list — English default + Indian regional + global majors. */
+export const LANGUAGES: Language[] = [
+  { code: "en", name: "English", native: "English" },
+  { code: "hi", name: "Hindi", native: "हिन्दी" },
+  { code: "te", name: "Telugu", native: "తెలుగు" },
+  { code: "ta", name: "Tamil", native: "தமிழ்" },
+  { code: "bn", name: "Bengali", native: "বাংলা" },
+  { code: "mr", name: "Marathi", native: "मराठी" },
+  { code: "es", name: "Spanish", native: "Español" },
+  { code: "fr", name: "French", native: "Français" },
+  { code: "de", name: "German", native: "Deutsch" },
+  { code: "pt", name: "Portuguese", native: "Português" },
+  { code: "ja", name: "Japanese", native: "日本語" },
+  { code: "zh-CN", name: "Chinese", native: "中文" },
+  { code: "ar", name: "Arabic", native: "العربية" },
+];
+
+const INCLUDED_LANGUAGE_CODES = LANGUAGES.map((l) => l.code).join(",");
+
 export type AccessibilitySettings = {
   /** -1 = 90 %, 0 = 100 %, 1 = 110 %, 2 = 120 %, 3 = 130 % */
   textSizeStep: number;
@@ -28,6 +53,8 @@ export type AccessibilitySettings = {
   enhancedCursor: boolean;
   pauseAnimation: boolean;
   hideImages: boolean;
+  /** Language code matching one of LANGUAGES[].code */
+  language: string;
 };
 
 export const DEFAULT_SETTINGS: AccessibilitySettings = {
@@ -43,6 +70,7 @@ export const DEFAULT_SETTINGS: AccessibilitySettings = {
   enhancedCursor: false,
   pauseAnimation: false,
   hideImages: false,
+  language: "en",
 };
 
 const STORAGE_KEY = "vm-a11y-settings";
@@ -155,6 +183,79 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
   }, [settings.adhdMode]);
+
+  // Google Translate Element loader — load once on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Define the init callback before loading the script (Google checks for
+    // this function name on script execution).
+    type GoogleTranslate = {
+      translate: {
+        TranslateElement: new (config: object, container: string) => unknown;
+      };
+    };
+    const w = window as unknown as {
+      google?: GoogleTranslate;
+      googleTranslateElementInit?: () => void;
+    };
+
+    w.googleTranslateElementInit = () => {
+      if (!w.google?.translate?.TranslateElement) return;
+      new w.google.translate.TranslateElement(
+        {
+          pageLanguage: "en",
+          includedLanguages: INCLUDED_LANGUAGE_CODES,
+          autoDisplay: false,
+        },
+        "google_translate_element"
+      );
+    };
+
+    const existing = document.querySelector(
+      'script[src*="translate.google.com/translate_a/element.js"]'
+    );
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src =
+      "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    script.setAttribute("data-a11y", "ignore");
+    document.body.appendChild(script);
+    // Don't remove on cleanup — keep the script across re-renders
+  }, []);
+
+  // Sync settings.language with Google Translate's hidden <select>
+  useEffect(() => {
+    if (!hydrated) return;
+    if (typeof window === "undefined") return;
+
+    const apply = () => {
+      const select =
+        document.querySelector<HTMLSelectElement>(".goog-te-combo");
+      if (!select) return false;
+      // English = restore to original by setting empty value (or 'en')
+      const target = settings.language === "en" ? "" : settings.language;
+      if (select.value !== target) {
+        select.value = target;
+        select.dispatchEvent(new Event("change"));
+      }
+      return true;
+    };
+
+    if (apply()) return;
+
+    // Google's select is injected async — poll briefly
+    let tries = 0;
+    const interval = window.setInterval(() => {
+      tries++;
+      if (apply() || tries > 25) {
+        window.clearInterval(interval);
+      }
+    }, 200);
+    return () => window.clearInterval(interval);
+  }, [settings.language, hydrated]);
 
   // Text-to-speech: click any element to read it aloud
   useEffect(() => {
