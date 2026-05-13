@@ -26,6 +26,7 @@ export function Footer() {
               Sitemap
             </span>
             <Link className="text-fg-muted hover:text-fg transition-colors" href="/work">Work</Link>
+            <Link className="text-fg-muted hover:text-fg transition-colors" href="/services">Services</Link>
             <Link className="text-fg-muted hover:text-fg transition-colors" href="/about">About</Link>
             <Link className="text-fg-muted hover:text-fg transition-colors" href="/contact">Contact</Link>
             <a className="text-fg-muted hover:text-fg transition-colors" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Resume</a>
