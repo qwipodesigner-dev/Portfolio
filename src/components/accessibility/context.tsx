@@ -74,6 +74,7 @@ export const DEFAULT_SETTINGS: AccessibilitySettings = {
 };
 
 const STORAGE_KEY = "vm-a11y-settings";
+const REOPEN_FLAG = "vm-a11y-panel-reopen";
 
 type Ctx = {
   settings: AccessibilitySettings;
@@ -106,7 +107,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [adhdY, setAdhdY] = useState(0);
 
-  // Load persisted settings on mount
+  // Load persisted settings + restore panel open state on mount
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -116,6 +117,16 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       /* swallow — corrupted storage shouldn't break the page */
+    }
+    // If we just reloaded as part of an English-restore action, re-open
+    // the panel so the user lands back where they were.
+    try {
+      if (sessionStorage.getItem(REOPEN_FLAG) === "1") {
+        sessionStorage.removeItem(REOPEN_FLAG);
+        setOpen(true);
+      }
+    } catch {
+      /* ignore */
     }
     setHydrated(true);
   }, []);
@@ -248,6 +259,13 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
           document.cookie = `googtrans=; path=/; ${expiry}`;
           document.cookie = `googtrans=; path=/; domain=${host}; ${expiry}`;
           document.cookie = `googtrans=; path=/; domain=.${host}; ${expiry}`;
+          // Re-open the panel on the next mount so the user doesn't lose
+          // their place when the reload happens.
+          try {
+            if (isOpen) sessionStorage.setItem(REOPEN_FLAG, "1");
+          } catch {
+            /* ignore */
+          }
           window.location.reload();
         }
         return true;
@@ -273,7 +291,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       }
     }, 200);
     return () => window.clearInterval(interval);
-  }, [settings.language, hydrated]);
+  }, [settings.language, hydrated, isOpen]);
 
   // Text-to-speech: click any element to read it aloud
   useEffect(() => {
