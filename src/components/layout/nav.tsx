@@ -36,7 +36,7 @@ export function Nav() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "backdrop-blur-md bg-bg/75 border-b border-border"
+          ? "backdrop-blur-xl bg-bg/90 border-b border-border"
           : "bg-transparent"
       )}
     >
