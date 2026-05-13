@@ -5,11 +5,15 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Container } from "../layout/container";
 
-import { HeroSpline } from "./hero-spline";
-
-// Spline scene — interactive cursor-following particles, hosted by Spline
-const SPLINE_SCENE =
-  "https://prod.spline.design/lMKcv86T5P6JzneM/scene.splinecode";
+const Hero3D = dynamic(
+  () => import("./hero-3d").then((m) => m.Hero3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full bg-[radial-gradient(circle_at_50%_50%,rgba(232,93,46,0.18),transparent_60%)]" />
+    ),
+  }
+);
 
 const TITLE_LINE_1 = "Senior Product";
 const TITLE_LINE_2 = "Designer.";
@@ -55,14 +59,9 @@ export function Hero() {
       <div className="absolute inset-0 -z-10 opacity-[0.04] [background-image:linear-gradient(to_right,var(--color-fg)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-fg)_1px,transparent_1px)] [background-size:48px_48px]" />
 
       {/* 3D canvas — desktop only: absolute on the right side.
-          Mobile renders a stacked instance below the copy (see further down).
-          data-lenis-prevent stops smooth-scroll from hijacking pointer events
-          on the canvas so Spline interaction stays snappy. */}
-      <div
-        className="hidden md:block absolute inset-y-0 right-0 md:w-[48%] lg:w-[46%] md:h-full md:top-0 md:pr-4 lg:pr-8 pointer-events-auto opacity-90"
-        data-lenis-prevent
-      >
-        <HeroSpline scene={SPLINE_SCENE} zoom={0.5} />
+          Mobile renders a stacked instance below the copy (see further down). */}
+      <div className="hidden md:block absolute inset-y-0 right-0 md:w-[45%] lg:w-[42%] md:h-full md:top-0 md:pr-4 lg:pr-8 pointer-events-auto opacity-90">
+        <Hero3D />
       </div>
 
       <Container className="relative z-10">
@@ -143,11 +142,8 @@ export function Hero() {
           </div>
 
           {/* 3D canvas — mobile only: stacks below the copy, doesn't overlap */}
-          <div
-            className="md:hidden relative h-[320px] xs:h-[360px] sm:h-[420px] w-full pointer-events-auto opacity-90"
-            data-lenis-prevent
-          >
-            <HeroSpline scene={SPLINE_SCENE} zoom={0.55} />
+          <div className="md:hidden relative h-[320px] xs:h-[360px] sm:h-[420px] w-full pointer-events-auto opacity-90">
+            <Hero3D />
           </div>
         </div>
 
