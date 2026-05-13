@@ -24,21 +24,16 @@ function ProjectCard({
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [40, -40]);
-  const isLarge = index === 0;
 
   return (
     <Link
       ref={ref}
       href={`/work/${project.slug}`}
-      className={`group relative overflow-hidden rounded-3xl border border-border bg-surface transition-colors hover:border-fg ${
-        isLarge ? "md:col-span-2" : "md:col-span-1"
-      }`}
+      className="group relative flex flex-col h-full overflow-hidden rounded-3xl border border-border bg-surface transition-colors hover:border-fg"
     >
-      {/* Image / Canvas area */}
+      {/* Image / Canvas area — uniform aspect across all cards */}
       <div
-        className={`relative overflow-hidden ${
-          isLarge ? "aspect-[16/10]" : "aspect-[4/5]"
-        }`}
+        className="relative overflow-hidden aspect-[4/5]"
         style={{
           background: `linear-gradient(135deg, ${project.accent}22 0%, transparent 60%), radial-gradient(circle at 70% 30%, ${project.accent}33, transparent 60%)`,
         }}
@@ -81,8 +76,8 @@ function ProjectCard({
         </div>
       </div>
 
-      {/* Text area */}
-      <div className="p-6 md:p-8">
+      {/* Text area — flex-1 so cards equalise height in each grid row */}
+      <div className="p-6 md:p-8 flex flex-col flex-1">
         <div className="flex items-center gap-3 mb-3 font-mono text-xs text-fg-subtle">
           <span>{project.client}</span>
           <span>·</span>
@@ -95,7 +90,7 @@ function ProjectCard({
           {project.tagline}
         </p>
 
-        <div className="flex flex-wrap gap-2 mt-5">
+        <div className="flex flex-wrap gap-2 mt-auto pt-5">
           {project.stack.slice(0, 4).map((s) => (
             <span
               key={s}
@@ -134,9 +129,9 @@ export function FeaturedWork() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
           {projects.map((p, i) => (
-            <Reveal key={p.slug} delay={i * 0.08}>
+            <Reveal key={p.slug} delay={i * 0.08} className="h-full">
               <ProjectCard project={p} index={i} />
             </Reveal>
           ))}
