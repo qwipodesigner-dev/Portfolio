@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useId } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   AlignVerticalSpaceAround,
   BookOpen,
@@ -53,6 +53,13 @@ function isSettingActive(s: AccessibilitySettings, key: keyof AccessibilitySetti
 export function AccessibilityWidget() {
   const { settings, set, reset, isOpen, setOpen, adhdY } = useAccessibility();
   const headingId = useId();
+
+  // Detect platform for the keyboard shortcut display (⌘ on macOS, Ctrl elsewhere).
+  // Defaults to mac for SSR; updates after hydration.
+  const [isMac, setIsMac] = useState(true);
+  useEffect(() => {
+    setIsMac(/Mac|iPad|iPhone|iPod/.test(navigator.userAgent));
+  }, []);
 
   // Close on escape, open on Ctrl+/
   useEffect(() => {
@@ -173,7 +180,7 @@ export function AccessibilityWidget() {
               )}
             >
               {/* Header */}
-              <header className="flex items-center justify-between gap-3 border-b border-border px-6 py-5">
+              <header className="flex items-start justify-between gap-3 border-b border-border px-6 py-5">
                 <div>
                   <h2
                     id={headingId}
@@ -181,9 +188,18 @@ export function AccessibilityWidget() {
                   >
                     Accessibility
                   </h2>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle mt-2">
-                    13 options · ⌘ + / to toggle
-                  </p>
+                  <div
+                    className="mt-3 inline-flex items-center gap-1.5"
+                    aria-label={`Press ${
+                      isMac ? "command" : "control"
+                    } plus slash to toggle`}
+                  >
+                    <Kbd aria-hidden>{isMac ? "⌘" : "Ctrl"}</Kbd>
+                    <span aria-hidden className="text-fg-subtle text-xs">
+                      +
+                    </span>
+                    <Kbd aria-hidden>/</Kbd>
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -369,6 +385,21 @@ export function AccessibilityWidget() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+/* ============================================================
+   Keyboard-key chip — used in the header for the ⌘ + / hint
+   ============================================================ */
+
+function Kbd({ children, ...rest }: React.HTMLAttributes<HTMLElement>) {
+  return (
+    <kbd
+      {...rest}
+      className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-md border border-border bg-bg px-1.5 font-mono text-[11px] font-medium text-fg-muted shadow-[inset_0_-1.5px_0_0_var(--color-border)]"
+    >
+      {children}
+    </kbd>
   );
 }
 
