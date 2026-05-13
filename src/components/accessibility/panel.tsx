@@ -3,7 +3,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useId } from "react";
 import {
-  Accessibility,
   AlignVerticalSpaceAround,
   BookOpen,
   Check,
@@ -70,7 +69,7 @@ export function AccessibilityWidget() {
 
   return (
     <div data-a11y="ignore">
-      {/* Launcher button */}
+      {/* Launcher button — universal access symbol, bold + clearly recognisable */}
       <motion.button
         type="button"
         onClick={() => setOpen(!isOpen)}
@@ -80,13 +79,51 @@ export function AccessibilityWidget() {
         className={cn(
           "fixed bottom-5 right-5 z-[90] flex h-14 w-14 items-center justify-center rounded-full",
           "bg-accent text-white shadow-[0_8px_24px_-6px_rgba(232,93,46,0.55)]",
-          "transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/40"
+          "ring-1 ring-white/20 transition-transform hover:scale-105",
+          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/40"
         )}
         initial={{ opacity: 0, scale: 0.6 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.2, duration: 0.4, ease: [0.22, 1, 0.36, 1] as const }}
       >
-        <Accessibility className="h-6 w-6" strokeWidth={2} />
+        {/* Standard international universal access pictogram */}
+        <svg
+          viewBox="0 0 32 32"
+          width="28"
+          height="28"
+          fill="none"
+          aria-hidden="true"
+        >
+          {/* head */}
+          <circle cx="16" cy="6.5" r="2.6" fill="currentColor" />
+          {/* arms */}
+          <path
+            d="M5.5 12 L26.5 12"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+          {/* torso */}
+          <path
+            d="M16 11.5 L16 19"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+          {/* legs */}
+          <path
+            d="M16 19 L11.5 27"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+          <path
+            d="M16 19 L20.5 27"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+        </svg>
         {anyActive && (
           <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-bg" />
         )}
@@ -96,13 +133,16 @@ export function AccessibilityWidget() {
       <AnimatePresence>
         {isOpen && (
           <>
+            {/* Invisible backdrop — captures outside-clicks to close the panel,
+                but stays transparent so the user sees their live preview
+                applied to the page underneath. */}
             <motion.div
               key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-[95] bg-black/40 backdrop-blur-sm"
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[95] bg-transparent"
               onClick={() => setOpen(false)}
               aria-hidden
             />
@@ -143,8 +183,12 @@ export function AccessibilityWidget() {
                 </button>
               </header>
 
-              {/* Body */}
-              <div className="flex-1 overflow-y-auto px-4 py-4">
+              {/* Body — data-lenis-prevent stops Lenis smooth-scroll from
+                  hijacking wheel events here so native scrolling works. */}
+              <div
+                className="flex-1 overflow-y-auto overscroll-contain px-4 py-4"
+                data-lenis-prevent
+              >
                 {/* Text size — full width stepper */}
                 <Stepper
                   label="Text Size"
@@ -274,7 +318,7 @@ export function AccessibilityWidget() {
                   Reset all
                 </button>
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle">
-                  Built for this site
+                  Built by Vikas Mittapalli
                 </p>
               </footer>
             </motion.aside>
