@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Nav } from "@/components/layout/nav";
@@ -86,6 +87,7 @@ export default function RootLayout({
           <Footer />
         </Providers>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
