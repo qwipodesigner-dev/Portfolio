@@ -73,19 +73,6 @@ export function Hero() {
         <div className="flex flex-col gap-10 md:grid md:grid-cols-12 md:gap-8 md:items-center md:min-h-[82vh] pt-6 md:pt-12">
           {/* Copy column */}
           <div className="md:col-span-8 lg:col-span-7 flex flex-col gap-6 md:gap-8 pointer-events-auto">
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="font-mono text-[10px] md:text-xs uppercase tracking-[0.2em] text-fg-muted flex items-start gap-3 text-balance"
-            >
-              <span className="relative inline-flex h-1.5 w-1.5 mt-[0.45em] flex-none">
-                <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
-                <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              </span>
-              <span>Available for select freelance work · Hyderabad, India</span>
-            </motion.span>
-
             <h1 className="font-display text-[clamp(2.75rem,11vw,7.5rem)] leading-[0.95] text-balance">
               <span className="block">
                 <AnimatedWords text={TITLE_LINE_1} />

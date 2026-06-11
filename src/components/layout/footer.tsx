@@ -65,10 +65,6 @@ export function Footer() {
           <p className="font-mono text-xs text-fg-subtle">
             © {new Date().getFullYear()} Vikas Mittapalli. Designed and built in Hyderabad.
           </p>
-          <p className="font-mono text-xs text-fg-subtle flex items-center gap-2">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Available for select freelance work
-          </p>
         </div>
       </Container>
     </footer>
