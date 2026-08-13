@@ -100,7 +100,7 @@ export function PageEditor({
           <span className="text-sm">
             Live on site
             <span className="block text-xs text-fg-muted">
-              Off = the URL 404s until you're ready
+              Off = the URL 404s until you&apos;re ready
             </span>
           </span>
         </label>

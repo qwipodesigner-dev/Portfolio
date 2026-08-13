@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useId, useState } from "react";
 import {
@@ -351,12 +352,12 @@ export function AccessibilityWidget() {
                   Reset all
                 </button>
                 {/* Quiet admin door — reads as the builder credit */}
-                <a
+                <Link
                   href="/admin"
                   className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle hover:text-fg transition-colors"
                 >
                   Built by Vikas Mittapalli
-                </a>
+                </Link>
               </footer>
             </motion.aside>
           </>
