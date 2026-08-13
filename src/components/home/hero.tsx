@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Container } from "../layout/container";
+import type { HeroContent } from "@/lib/site";
 
 const Hero3D = dynamic(
   () => import("./hero-3d").then((m) => m.Hero3D),
@@ -14,9 +15,6 @@ const Hero3D = dynamic(
     ),
   }
 );
-
-const TITLE_LINE_1 = "Senior Product";
-const TITLE_LINE_2 = "Designer.";
 
 const word = {
   hidden: { y: "110%", opacity: 0 },
@@ -52,7 +50,7 @@ function AnimatedWords({ text, base = 0 }: { text: string; base?: number }) {
   );
 }
 
-export function Hero() {
+export function Hero({ content }: { content: HeroContent }) {
   return (
     <section className="relative overflow-hidden pt-6 md:pt-16 pb-16 md:pb-32">
       {/* subtle grid texture — sits behind everything */}
@@ -75,12 +73,12 @@ export function Hero() {
           <div className="md:col-span-8 lg:col-span-7 flex flex-col gap-6 md:gap-8 pointer-events-auto">
             <h1 className="font-display text-[clamp(2.75rem,11vw,7.5rem)] leading-[0.95] text-balance">
               <span className="block">
-                <AnimatedWords text={TITLE_LINE_1} />
+                <AnimatedWords text={content.titleLine1} />
               </span>
               <span className="block text-accent italic">
                 <AnimatedWords
-                  text={TITLE_LINE_2}
-                  base={TITLE_LINE_1.split(" ").length}
+                  text={content.titleLine2}
+                  base={content.titleLine1.split(" ").length}
                 />
               </span>
             </h1>
@@ -91,10 +89,9 @@ export function Hero() {
               transition={{ delay: 0.6, duration: 0.7 }}
               className="text-base md:text-xl text-fg-muted max-w-xl text-pretty leading-relaxed"
             >
-              Six years. Forty-plus products shipped across healthcare, logistics,
-              and B2B SaaS. One belief:{" "}
+              {content.subtitle}{" "}
               <span className="text-fg italic font-display">
-                good design is good business.
+                {content.subtitleEmphasis}
               </span>
             </motion.p>
 
@@ -105,17 +102,17 @@ export function Hero() {
               className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 pt-2 md:pt-4"
             >
               <Link
-                href="/work"
+                href={content.primaryCta.href}
                 className="group inline-flex items-center justify-center sm:justify-start gap-3 rounded-full bg-fg text-bg px-6 py-4 text-sm font-medium hover:bg-accent hover:text-white transition-all hover:pr-8"
               >
-                See selected work
+                {content.primaryCta.label}
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </Link>
               <Link
-                href="/contact"
+                href={content.secondaryCta.href}
                 className="inline-flex items-center justify-center sm:justify-start gap-2 rounded-full border border-border bg-surface/80 backdrop-blur-sm px-6 py-4 text-sm font-medium hover:bg-surface hover:border-fg transition-colors"
               >
-                Get in touch
+                {content.secondaryCta.label}
               </Link>
             </motion.div>
 
@@ -125,10 +122,10 @@ export function Hero() {
               transition={{ delay: 1.2, duration: 1 }}
               className="flex flex-col gap-2 pt-4 md:pt-10 font-mono text-[10px] md:text-xs uppercase tracking-[0.18em] text-fg-subtle"
             >
-              <span>Currently</span>
+              <span>{content.currentlyLabel}</span>
               <span className="text-fg-muted font-sans text-sm normal-case tracking-normal">
-                Designing seller &amp; logistics platforms at{" "}
-                <span className="text-fg">Qwipo</span>
+                {content.currentlyText}{" "}
+                <span className="text-fg">{content.currentlyHighlight}</span>
               </span>
             </motion.div>
           </div>

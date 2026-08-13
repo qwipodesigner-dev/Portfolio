@@ -4,6 +4,7 @@ import { isAdmin } from "@/lib/auth";
 import { getAllProjectsAdmin, isDbLive } from "@/lib/content";
 import { logoutAction, seedAction } from "./actions";
 import { ProjectList } from "./project-list";
+import { AdminTabs } from "./ui";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,6 @@ export default async function AdminDashboard() {
           >
             View site ↗
           </Link>
-          <Link
-            href="/admin/settings"
-            className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
-          >
-            Settings
-          </Link>
           <form action={logoutAction}>
             <button className="rounded-full border border-border px-4 py-2 text-sm text-fg-muted hover:border-fg hover:text-fg transition-colors">
               Log out
@@ -44,6 +39,8 @@ export default async function AdminDashboard() {
           </form>
         </nav>
       </header>
+
+      <AdminTabs active="projects" />
 
       {!dbLive && (
         <div className="mb-8 rounded-2xl border border-accent/40 bg-accent-soft p-6">

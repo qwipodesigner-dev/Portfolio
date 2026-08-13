@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
-import { services } from "@/lib/services";
+import { getVisibleServices } from "@/lib/services-data";
+import { getSiteContent } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -10,29 +11,29 @@ export const metadata: Metadata = {
     "Six ways I help product teams ship better software — discovery, architecture, UI, design systems, prototyping, and design-to-code collaboration.",
 };
 
-export default function ServicesIndexPage() {
+export default async function ServicesIndexPage() {
+  const [services, content] = await Promise.all([
+    getVisibleServices(),
+    getSiteContent("servicesPage"),
+  ]);
   return (
     <>
       <section className="pt-16 md:pt-24 pb-12 md:pb-16">
         <Container size="md">
           <Reveal>
             <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              Services · How I work
+              {content.eyebrow}
             </span>
           </Reveal>
           <Reveal delay={0.1}>
             <h1 className="font-display text-5xl md:text-7xl leading-[1.02] text-balance mt-6">
-              Six ways I help teams ship{" "}
-              <span className="italic text-accent">better products.</span>
+              {content.heading}{" "}
+              <span className="italic text-accent">{content.headingEmphasis}</span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mt-8 max-w-2xl text-fg-muted text-lg text-pretty">
-              I take ownership end-to-end — from the messy problem statement to
-              the handoff that engineers can actually build from. Click any of
-              the six below for an honest walk-through of how I run that part of
-              the work, what ships at the end, and the methods, frameworks, and
-              tools I reach for.
+              {content.blurb}
             </p>
           </Reveal>
         </Container>

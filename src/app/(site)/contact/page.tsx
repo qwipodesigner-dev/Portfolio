@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
 import { ContactForm } from "@/components/contact-form";
+import { getSiteContent } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -9,26 +10,26 @@ export const metadata: Metadata = {
     "Start a conversation about a product you want designed well.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const contact = await getSiteContent("contact");
+
   return (
     <section className="pt-16 md:pt-24 pb-24 md:pb-32">
       <Container size="md">
         <Reveal>
           <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-            Contact
+            {contact.eyebrow}
           </span>
         </Reveal>
         <Reveal delay={0.1}>
           <h1 className="font-display text-5xl md:text-7xl leading-[1.02] text-balance mt-6 max-w-3xl">
-            Let&apos;s make something{" "}
-            <span className="italic text-accent">good.</span>
+            {contact.heading}{" "}
+            <span className="italic text-accent">{contact.headingEmphasis}</span>
           </h1>
         </Reveal>
         <Reveal delay={0.2}>
           <p className="mt-8 max-w-xl text-fg-muted text-lg text-pretty">
-            Tell me a bit about what you&apos;re working on — timeline,
-            shape of the problem, and what success looks like. I read every
-            message and typically respond within two business days.
+            {contact.blurb}
           </p>
         </Reveal>
 
@@ -43,16 +44,16 @@ export default function ContactPage() {
                 Direct
               </span>
               <a
-                href="mailto:vikasmittapalli@gmail.com"
+                href={`mailto:${contact.email}`}
                 className="block font-display text-xl hover:text-accent transition-colors"
               >
-                vikasmittapalli@gmail.com
+                {contact.email}
               </a>
               <a
-                href="tel:+919703479995"
+                href={`tel:${contact.phone.replace(/\s/g, "")}`}
                 className="block mt-2 text-fg-muted hover:text-fg transition-colors"
               >
-                +91 97034 79995
+                {contact.phone}
               </a>
             </div>
 
@@ -61,26 +62,18 @@ export default function ContactPage() {
                 Elsewhere
               </span>
               <ul className="flex flex-col gap-2">
-                <li>
-                  <a
-                    href="https://www.linkedin.com/in/vikasmittapalli/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-fg-muted hover:text-fg transition-colors"
-                  >
-                    LinkedIn ↗
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.behance.net/vikasmittapalli"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-fg-muted hover:text-fg transition-colors"
-                  >
-                    Behance ↗
-                  </a>
-                </li>
+                {contact.socials.map((s) => (
+                  <li key={s.href}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-fg-muted hover:text-fg transition-colors"
+                    >
+                      {s.label} ↗
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -89,19 +82,20 @@ export default function ContactPage() {
                 Based in
               </span>
               <p className="text-fg-muted">
-                Hyderabad, India
+                {contact.basedIn}
                 <br />
-                <span className="font-mono text-xs text-fg-subtle">IST · UTC+5:30</span>
+                <span className="font-mono text-xs text-fg-subtle">
+                  {contact.timezone}
+                </span>
               </p>
             </div>
 
             <div className="rounded-2xl border border-border bg-surface p-6">
               <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-subtle mb-3 block">
-                Preferred work
+                {contact.preferredHeading}
               </span>
               <p className="text-sm text-fg-muted text-pretty">
-                Healthcare, B2B SaaS, logistics and commerce platforms, and
-                design-system engagements. Open to roles and consulting.
+                {contact.preferredText}
               </p>
             </div>
           </Reveal>

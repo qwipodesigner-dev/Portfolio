@@ -5,9 +5,16 @@ import { motion } from "framer-motion";
 import { Container } from "../layout/container";
 import { Reveal } from "../reveal";
 import { SectionHeader } from "../layout/section";
-import { services } from "@/lib/services";
+import type { Service } from "@/lib/services";
+import type { SectionHeaderContent } from "@/lib/site";
 
-export function Services() {
+export function Services({
+  header,
+  services,
+}: {
+  header: SectionHeaderContent;
+  services: Service[];
+}) {
   return (
     <section
       id="services"
@@ -15,9 +22,9 @@ export function Services() {
     >
       <Container>
         <SectionHeader
-          eyebrow="Services · What I do"
-          title="Six ways I help teams ship better products."
-          description="I take ownership end-to-end — from the messy problem statement to the handoff engineering can actually build from. Click any service for the process, deliverables, methods, and tools."
+          eyebrow={header.eyebrow}
+          title={header.title}
+          description={header.description}
         />
 
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden">

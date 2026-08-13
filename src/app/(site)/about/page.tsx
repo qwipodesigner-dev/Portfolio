@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
 import { PortraitImage } from "@/components/portrait-image";
+import { getSiteContent } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -9,88 +10,26 @@ export const metadata: Metadata = {
     "Senior Product Designer based in Hyderabad. Six years of experience in healthcare, B2B SaaS, and logistics product design.",
 };
 
-const experience = [
-  {
-    role: "Senior Product Designer",
-    company: "Qwipo",
-    period: "Dec 2025 — Present",
-    location: "Hybrid · Hyderabad",
-    highlight:
-      "B2B/B2C logistics and seller applications — onboarding, inventory, order management, and pricing systems.",
-  },
-  {
-    role: "Senior Product Designer",
-    company: "Achala IT Solutions",
-    period: "Dec 2023 — Oct 2025",
-    location: "Hyderabad",
-    highlight:
-      "40+ healthcare and enterprise applications for AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster Hospitals — ABHA and WCAG compliant.",
-  },
-  {
-    role: "UI/UX & Brand Designer",
-    company: "Flytta Innovations",
-    period: "Aug 2021 — Nov 2023",
-    location: "Hyderabad",
-    highlight:
-      "Led brand + product design across digital platforms. Mentored juniors and established design guidelines.",
-  },
-  {
-    role: "Visual Designer",
-    company: "Granddad Communications",
-    period: "Jun 2020 — Aug 2021",
-    location: "Hyderabad",
-    highlight:
-      "Brand identity, environmental branding, and animated social content.",
-  },
-  {
-    role: "2D Animator — Intern",
-    company: "Cosmos Maya",
-    period: "Mar 2020 — Jun 2020",
-    location: "Hyderabad",
-    highlight:
-      "Worked on multiple episodes of a Cartoon Network animated series — timing, spacing, character motion.",
-  },
-];
+export default async function AboutPage() {
+  const [about, contact, settings] = await Promise.all([
+    getSiteContent("about"),
+    getSiteContent("contact"),
+    getSiteContent("settings"),
+  ]);
 
-const stack = [
-  { label: "Figma", level: "Expert" },
-  { label: "Illustrator", level: "Expert" },
-  { label: "Photoshop", level: "Proficient" },
-  { label: "Adobe XD", level: "Proficient" },
-  { label: "After Effects", level: "Proficient" },
-  { label: "Blender", level: "Learning" },
-  { label: "Front-end (React / Tailwind)", level: "Learning" },
-];
-
-const values = [
-  {
-    title: "Systems over screens.",
-    body: "Every component, token, and flow earns its place by how well it scales past its first release.",
-  },
-  {
-    title: "Research reaches engineering.",
-    body: "The story of why something matters travels to the people who build it, or the design didn't do its job.",
-  },
-  {
-    title: "Business software deserves humanity.",
-    body: "Enterprise tools take up most of people's working lives. That's reason enough to make them feel good.",
-  },
-];
-
-export default function AboutPage() {
   return (
     <>
       <section className="pt-16 md:pt-24 pb-16">
         <Container size="md">
           <Reveal>
             <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              About · Vikas Mittapalli
+              {about.eyebrow}
             </span>
           </Reveal>
           <Reveal delay={0.1}>
             <h1 className="font-display text-5xl md:text-7xl leading-[1.02] text-balance mt-6">
-              A senior product designer who treats interfaces as{" "}
-              <span className="italic text-accent">conversations.</span>
+              {about.heading}{" "}
+              <span className="italic text-accent">{about.headingEmphasis}</span>
             </h1>
           </Reveal>
         </Container>
@@ -114,9 +53,11 @@ export default function AboutPage() {
                     }}
                   />
                   <div className="absolute bottom-6 left-6 right-6">
-                    <p className="font-display text-white text-3xl">Vikas.</p>
+                    <p className="font-display text-white text-3xl">
+                      {about.portraitName}
+                    </p>
                     <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/80 mt-2">
-                      Hyderabad, India · 2026
+                      {about.portraitMeta}
                     </p>
                   </div>
                 </div>
@@ -124,31 +65,26 @@ export default function AboutPage() {
               <Reveal delay={0.15}>
                 <div className="flex flex-col gap-3 mt-8">
                   <a
-                    href="/resume.pdf"
+                    href={settings.resumeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-between rounded-full border border-border bg-surface px-5 py-3 text-sm font-medium hover:bg-accent hover:text-white hover:border-accent transition-colors"
                   >
                     Download resume <span>↓</span>
                   </a>
+                  {contact.socials.map((s) => (
+                    <a
+                      key={s.href}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-between rounded-full border border-border bg-surface px-5 py-3 text-sm text-fg-muted hover:text-fg transition-colors"
+                    >
+                      {s.label} <span>↗</span>
+                    </a>
+                  ))}
                   <a
-                    href="https://www.linkedin.com/in/vikasmittapalli/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-between rounded-full border border-border bg-surface px-5 py-3 text-sm text-fg-muted hover:text-fg transition-colors"
-                  >
-                    LinkedIn <span>↗</span>
-                  </a>
-                  <a
-                    href="https://www.behance.net/vikasmittapalli"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-between rounded-full border border-border bg-surface px-5 py-3 text-sm text-fg-muted hover:text-fg transition-colors"
-                  >
-                    Behance <span>↗</span>
-                  </a>
-                  <a
-                    href="mailto:vikasmittapalli@gmail.com"
+                    href={`mailto:${contact.email}`}
                     className="inline-flex items-center justify-between rounded-full border border-border bg-surface px-5 py-3 text-sm text-fg-muted hover:text-fg transition-colors"
                   >
                     Email <span>→</span>
@@ -158,50 +94,22 @@ export default function AboutPage() {
             </div>
 
             <div className="md:col-span-8 flex flex-col gap-6">
-              <Reveal delay={0.1}>
-                <p className="text-xl md:text-2xl leading-relaxed text-pretty">
-                  I&apos;m Vikas — a Senior Product Designer based in Hyderabad
-                  with six years of experience designing complex B2B, healthcare,
-                  and logistics products.
-                </p>
-              </Reveal>
-              <Reveal delay={0.2}>
-                <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-                  I&apos;m currently at{" "}
-                  <span className="text-fg">Qwipo</span>, where I lead
-                  end-to-end design for seller and logistics applications:
-                  onboarding, inventory, pricing systems — the kind of workflows
-                  where every extra click costs a real business real money.
-                  Before this, two years at{" "}
-                  <span className="text-fg">Achala IT Solutions</span>{" "}
-                  designing 40+ healthcare applications for AIG, KIMS,
-                  Kamineni, Continental, Nephroplus, and Aster — work governed
-                  by ABHA and WCAG compliance, where getting design wrong has
-                  consequences beyond bounce rate.
-                </p>
-              </Reveal>
-              <Reveal delay={0.3}>
-                <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-                  I didn&apos;t start in product design. I have a Bachelor of
-                  Fine Arts in Animation from JNAFAU, and my first job was as a
-                  2D animator on a Cartoon Network series at Cosmos Maya. That
-                  origin still shapes how I work: I treat interfaces as
-                  sequences, I care about timing, and I believe the space
-                  between two states is where a product earns its personality.
-                </p>
-              </Reveal>
-              <Reveal delay={0.4}>
-                <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-                  What I care about now: design systems that scale past their
-                  first release, research that reaches the engineers who build
-                  the thing, and the slow, unfashionable work of making
-                  business software feel humane.
-                </p>
-              </Reveal>
+              {about.paragraphs.map((p, i) => (
+                <Reveal key={i} delay={0.1 + i * 0.1}>
+                  <p
+                    className={
+                      i === 0
+                        ? "text-xl md:text-2xl leading-relaxed text-pretty"
+                        : "text-fg-muted text-lg leading-relaxed text-pretty"
+                    }
+                  >
+                    {p}
+                  </p>
+                </Reveal>
+              ))}
               <Reveal delay={0.5}>
                 <p className="text-fg-muted text-sm italic pt-2">
-                  Outside of work — long travel, photography, cooking, and
-                  mural painting.
+                  {about.hobbiesLine}
                 </p>
               </Reveal>
             </div>
@@ -214,16 +122,16 @@ export default function AboutPage() {
         <Container size="md">
           <Reveal>
             <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              How I work
+              {about.valuesEyebrow}
             </span>
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="font-display text-3xl md:text-4xl mt-6 mb-12 text-balance">
-              Three things I keep coming back to.
+              {about.valuesHeading}
             </h2>
           </Reveal>
           <ul className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden">
-            {values.map((v, i) => (
+            {about.values.map((v, i) => (
               <Reveal key={v.title} delay={i * 0.1} as="li" className="bg-bg p-8">
                 <span className="font-mono text-xs text-fg-subtle tracking-[0.2em]">
                   {String(i + 1).padStart(2, "0")}
@@ -243,17 +151,17 @@ export default function AboutPage() {
         <Container size="md">
           <Reveal>
             <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              Where I&apos;ve been
+              {about.experienceEyebrow}
             </span>
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="font-display text-3xl md:text-4xl mt-6 mb-12 text-balance">
-              Six years, five rooms.
+              {about.experienceHeading}
             </h2>
           </Reveal>
           <ol className="relative border-l border-border pl-8 md:pl-12 flex flex-col gap-12">
-            {experience.map((e, i) => (
-              <Reveal key={e.company} delay={i * 0.08} as="li" className="relative">
+            {about.experience.map((e, i) => (
+              <Reveal key={`${e.company}-${i}`} delay={i * 0.08} as="li" className="relative">
                 <span className="absolute -left-[35px] md:-left-[49px] top-2 h-3 w-3 rounded-full bg-accent ring-4 ring-bg" />
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="font-display text-xl md:text-2xl">
@@ -280,16 +188,16 @@ export default function AboutPage() {
         <Container size="md">
           <Reveal>
             <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              Stack
+              {about.stackEyebrow}
             </span>
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="font-display text-3xl md:text-4xl mt-6 mb-12 text-balance">
-              Tools I reach for.
+              {about.stackHeading}
             </h2>
           </Reveal>
           <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {stack.map((s, i) => (
+            {about.stack.map((s, i) => (
               <Reveal
                 key={s.label}
                 delay={i * 0.05}

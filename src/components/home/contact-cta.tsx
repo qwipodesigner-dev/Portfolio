@@ -5,8 +5,15 @@ import { motion } from "framer-motion";
 import { useRef } from "react";
 import { useScroll, useTransform } from "framer-motion";
 import { Container } from "../layout/container";
+import type { ContactCtaContent } from "@/lib/site";
 
-export function ContactCTA() {
+export function ContactCTA({
+  content,
+  email,
+}: {
+  content: ContactCtaContent;
+  email: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -37,16 +44,16 @@ export function ContactCTA() {
           className="flex flex-col items-center text-center gap-10"
         >
           <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-            Let&apos;s work together
+            {content.eyebrow}
           </span>
 
           <h2 className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.95] text-balance max-w-5xl">
-            Got a product worth <span className="italic text-accent">designing well?</span>
+            {content.heading}{" "}
+            <span className="italic text-accent">{content.headingEmphasis}</span>
           </h2>
 
           <p className="max-w-xl text-fg-muted text-lg text-pretty">
-            I take on a small number of freelance and consulting projects each year.
-            Healthcare, B2B SaaS, logistics, and design-system work preferred.
+            {content.body}
           </p>
 
           <div className="flex flex-wrap justify-center items-center gap-4 pt-4">
@@ -54,15 +61,15 @@ export function ContactCTA() {
               href="/contact"
               className="group inline-flex items-center gap-3 rounded-full bg-fg text-bg px-8 py-5 text-base font-medium hover:bg-accent hover:text-white transition-all hover:pr-10"
             >
-              Start a conversation
+              {content.ctaLabel}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
             <a
-              href="mailto:vikasmittapalli@gmail.com"
+              href={`mailto:${email}`}
               className="inline-flex items-center gap-2 text-fg-muted hover:text-fg transition-colors text-sm"
             >
-              or drop a mail
-              <span className="text-fg">vikasmittapalli@gmail.com</span>
+              {content.emailPrompt}
+              <span className="text-fg">{email}</span>
             </a>
           </div>
         </motion.div>

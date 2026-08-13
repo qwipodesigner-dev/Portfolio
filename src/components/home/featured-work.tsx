@@ -7,6 +7,7 @@ import { Container } from "../layout/container";
 import { Reveal } from "../reveal";
 import { SectionHeader } from "../layout/section";
 import type { Project } from "@/lib/projects";
+import type { SectionHeaderContent } from "@/lib/site";
 
 function ProjectCard({
   project,
@@ -103,7 +104,13 @@ function ProjectCard({
   );
 }
 
-export function FeaturedWork({ projects }: { projects: Project[] }) {
+export function FeaturedWork({
+  projects,
+  header,
+}: {
+  projects: Project[];
+  header: SectionHeaderContent;
+}) {
   return (
     <section
       id="work"
@@ -112,9 +119,9 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
       <Container>
         <div className="flex items-end justify-between gap-6 mb-12 md:mb-16">
           <SectionHeader
-            eyebrow="Selected work · 2021 — Now"
-            title="Systems that ship, interfaces that scale."
-            description="A few recent projects across healthcare, B2B commerce, and enterprise design systems."
+            eyebrow={header.eyebrow}
+            title={header.title}
+            description={header.description}
           />
           <Reveal delay={0.2}>
             <Link

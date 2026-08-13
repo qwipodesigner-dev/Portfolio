@@ -4,12 +4,12 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
 import { ServiceImage } from "@/components/service-image";
-import { getServiceBySlug, services } from "@/lib/services";
+import { getServiceBySlug, getVisibleServices } from "@/lib/services-data";
 
 type Params = { slug: string };
 
 export async function generateStaticParams(): Promise<Params[]> {
-  return services.map((s) => ({ slug: s.slug }));
+  return (await getVisibleServices()).map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({
@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
   if (!service) return {};
   return {
     title: service.title,
@@ -32,10 +32,10 @@ export default async function ServicePage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
   if (!service) notFound();
 
-  const nextService = getServiceBySlug(service.next);
+  const nextService = await getServiceBySlug(service.next);
 
   return (
     <>

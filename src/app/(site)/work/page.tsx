@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
 import { getVisibleProjects } from "@/lib/content";
+import { getSiteContent } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -11,27 +12,28 @@ export const metadata: Metadata = {
 };
 
 export default async function WorkPage() {
-  const projects = await getVisibleProjects();
+  const [projects, content] = await Promise.all([
+    getVisibleProjects(),
+    getSiteContent("workPage"),
+  ]);
   return (
     <>
       <section className="pt-16 md:pt-24 pb-12 md:pb-16">
         <Container size="md">
           <Reveal>
             <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              Work · 2021 — Now
+              {content.eyebrow}
             </span>
           </Reveal>
           <Reveal delay={0.1}>
             <h1 className="font-display text-5xl md:text-7xl leading-[1.02] text-balance mt-6">
-              A working archive of{" "}
-              <span className="italic text-accent">what I&apos;ve shipped.</span>
+              {content.heading}{" "}
+              <span className="italic text-accent">{content.headingEmphasis}</span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mt-8 max-w-2xl text-fg-muted text-lg text-pretty">
-              Selected projects spanning healthcare, B2B commerce, logistics, and
-              design systems. Each case study walks through context, process, and
-              what shipped — with the honest bits still attached.
+              {content.blurb}
             </p>
           </Reveal>
         </Container>
@@ -90,7 +92,7 @@ export default async function WorkPage() {
             ))}
             <li className="border-t border-border py-16 text-center">
               <p className="font-mono text-xs uppercase tracking-[0.22em] text-fg-subtle">
-                More on the way · Case studies for Qwipo and Flytta coming soon
+                {content.footerNote}
               </p>
             </li>
           </ul>

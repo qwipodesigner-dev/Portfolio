@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import type { CaseStudySection, Project } from "@/lib/projects";
-import { saveProjectAction, uploadImageAction } from "../../actions";
+import { saveProjectAction } from "../../actions";
+import { Field, SectionsEditor, labelCls as label } from "../../ui";
 
 /* Accent options mirror the palette already used across the site,
    so new projects automatically follow the existing guidelines. */
@@ -17,217 +18,6 @@ const ACCENTS = [
   "#4A8B7C",
   "#6B5BD9",
 ];
-
-const input =
-  "w-full rounded-xl border border-border bg-surface px-4 py-3 text-fg placeholder:text-fg-subtle focus:outline-none focus:border-accent transition-colors";
-const label =
-  "font-mono text-[10px] uppercase tracking-[0.22em] text-fg-subtle mb-1.5 block";
-const chip =
-  "rounded-full border border-border px-3 py-1.5 text-xs hover:border-fg transition-colors";
-
-function Field({
-  name,
-  value,
-  onChange,
-  textarea,
-  placeholder,
-}: {
-  name: string;
-  value: string;
-  onChange: (v: string) => void;
-  textarea?: boolean;
-  placeholder?: string;
-}) {
-  return (
-    <div>
-      <span className={label}>{name}</span>
-      {textarea ? (
-        <textarea
-          className={`${input} min-h-24 resize-y`}
-          value={value}
-          placeholder={placeholder}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      ) : (
-        <input
-          className={input}
-          value={value}
-          placeholder={placeholder}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      )}
-    </div>
-  );
-}
-
-function SectionCard({
-  section,
-  index,
-  total,
-  onChange,
-  onMove,
-  onDelete,
-}: {
-  section: CaseStudySection;
-  index: number;
-  total: number;
-  onChange: (s: CaseStudySection) => void;
-  onMove: (dir: -1 | 1) => void;
-  onDelete: () => void;
-}) {
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const type = section.type ?? "text";
-
-  const upload = async (file: File) => {
-    setUploading(true);
-    const fd = new FormData();
-    fd.set("file", file);
-    const res = await uploadImageAction(fd);
-    setUploading(false);
-    if (res.url && (type === "image" || type === "video")) {
-      onChange({ ...section, src: res.url } as CaseStudySection);
-    } else if (res.error) {
-      alert(res.error);
-    }
-  };
-
-  return (
-    <div className="rounded-2xl border border-border bg-surface p-5">
-      <div className="flex items-center justify-between mb-4">
-        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-fg-muted">
-          {index + 1} · {type} block
-        </span>
-        <span className="flex gap-1">
-          <button
-            aria-label="Move block up"
-            disabled={index === 0}
-            onClick={() => onMove(-1)}
-            className="h-7 w-7 rounded border border-border text-xs disabled:opacity-30"
-          >
-            ↑
-          </button>
-          <button
-            aria-label="Move block down"
-            disabled={index === total - 1}
-            onClick={() => onMove(1)}
-            className="h-7 w-7 rounded border border-border text-xs disabled:opacity-30"
-          >
-            ↓
-          </button>
-          <button
-            aria-label="Delete block"
-            onClick={onDelete}
-            className="h-7 w-7 rounded border border-border text-xs text-fg-muted hover:border-red-400 hover:text-red-500"
-          >
-            ✕
-          </button>
-        </span>
-      </div>
-
-      {type === "text" && "eyebrow" in section && (
-        <div className="flex flex-col gap-3">
-          <Field
-            name="Eyebrow"
-            value={section.eyebrow}
-            placeholder="01 · Context"
-            onChange={(v) => onChange({ ...section, eyebrow: v })}
-          />
-          <Field
-            name="Heading"
-            value={section.title}
-            onChange={(v) => onChange({ ...section, title: v })}
-          />
-          <Field
-            name="Body"
-            textarea
-            value={section.body}
-            onChange={(v) => onChange({ ...section, body: v })}
-          />
-          <Field
-            name="Bullets (one per line, optional)"
-            textarea
-            value={(section.bullets ?? []).join("\n")}
-            onChange={(v) =>
-              onChange({
-                ...section,
-                bullets: v.split("\n").filter((b) => b.trim().length > 0),
-              })
-            }
-          />
-        </div>
-      )}
-
-      {(type === "image" || type === "video") && "src" in section && (
-        <div className="flex flex-col gap-3">
-          <Field
-            name={type === "image" ? "Image URL" : "Video URL (file or YouTube/Vimeo)"}
-            value={section.src}
-            placeholder="https://…"
-            onChange={(v) => onChange({ ...section, src: v })}
-          />
-          <div className="flex items-center gap-3">
-            <input
-              ref={fileRef}
-              type="file"
-              accept={type === "image" ? "image/*" : "video/*"}
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) upload(f);
-              }}
-            />
-            <button
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              className={chip}
-            >
-              {uploading ? "Uploading…" : "Upload file"}
-            </button>
-            {section.src && type === "image" && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={section.src}
-                alt=""
-                className="h-14 w-20 object-cover rounded-lg border border-border"
-              />
-            )}
-          </div>
-          {type === "image" && (
-            <Field
-              name="Alt text"
-              value={("alt" in section && section.alt) || ""}
-              onChange={(v) =>
-                onChange({ ...section, alt: v } as CaseStudySection)
-              }
-            />
-          )}
-          <Field
-            name="Caption (optional)"
-            value={section.caption ?? ""}
-            onChange={(v) => onChange({ ...section, caption: v })}
-          />
-        </div>
-      )}
-
-      {type === "embed" && "url" in section && (
-        <div className="flex flex-col gap-3">
-          <Field
-            name="Embed URL"
-            value={section.url}
-            placeholder="https://… (Figma prototype, live site)"
-            onChange={(v) => onChange({ ...section, url: v })}
-          />
-          <Field
-            name="Caption (optional)"
-            value={section.caption ?? ""}
-            onChange={(v) => onChange({ ...section, caption: v })}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function ProjectEditor({
   originalSlug,
@@ -248,34 +38,8 @@ export function ProjectEditor({
   const set = <K extends keyof Project>(key: K, value: Project[K]) =>
     setP((prev) => ({ ...prev, [key]: value }));
 
-  const setSection = (i: number, s: CaseStudySection) =>
-    setP((prev) => {
-      const sections = [...prev.sections];
-      sections[i] = s;
-      return { ...prev, sections };
-    });
-
-  const moveSection = (i: number, dir: -1 | 1) =>
-    setP((prev) => {
-      const sections = [...prev.sections];
-      const j = i + dir;
-      if (j < 0 || j >= sections.length) return prev;
-      [sections[i], sections[j]] = [sections[j], sections[i]];
-      return { ...prev, sections };
-    });
-
-  const addSection = (type: "text" | "image" | "video" | "embed") =>
-    setP((prev) => ({
-      ...prev,
-      sections: [
-        ...prev.sections,
-        type === "text"
-          ? { type, eyebrow: `0${prev.sections.length + 1} · `, title: "", body: "" }
-          : type === "embed"
-            ? { type, url: "" }
-            : { type, src: "" },
-      ],
-    }));
+  const setSections = (sections: CaseStudySection[]) =>
+    setP((prev) => ({ ...prev, sections }));
 
   const save = () => {
     setError(null);
@@ -470,39 +234,7 @@ export function ProjectEditor({
       {/* Sections */}
       <section className="flex flex-col gap-4">
         <h2 className="font-display text-2xl">Case study sections</h2>
-        {p.sections.map((s, i) => (
-          <SectionCard
-            key={i}
-            section={s}
-            index={i}
-            total={p.sections.length}
-            onChange={(next) => setSection(i, next)}
-            onMove={(dir) => moveSection(i, dir)}
-            onDelete={() =>
-              setP((prev) => ({
-                ...prev,
-                sections: prev.sections.filter((_, j) => j !== i),
-              }))
-            }
-          />
-        ))}
-        <div className="flex flex-wrap items-center gap-2 mt-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-fg-subtle mr-1">
-            Add block:
-          </span>
-          <button className={chip} onClick={() => addSection("text")}>
-            + Text
-          </button>
-          <button className={chip} onClick={() => addSection("image")}>
-            + Image
-          </button>
-          <button className={chip} onClick={() => addSection("video")}>
-            + Video
-          </button>
-          <button className={chip} onClick={() => addSection("embed")}>
-            + Embed
-          </button>
-        </div>
+        <SectionsEditor sections={p.sections} onChange={setSections} />
       </section>
 
       <div className="mt-12 pt-8 border-t border-border flex justify-end">

@@ -5,15 +5,15 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { ThemeToggle } from "../theme-toggle";
+import type { LinkItem } from "@/lib/site";
 
-const links = [
-  { href: "/work", label: "Work" },
-  { href: "/services", label: "Services" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
-
-export function Nav() {
+export function Nav({
+  brandName,
+  links,
+}: {
+  brandName: string;
+  links: LinkItem[];
+}) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -48,7 +48,7 @@ export function Nav() {
           <span className="relative inline-block h-2 w-2 rounded-full bg-accent">
             <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-40" />
           </span>
-          Vikas Mittapalli
+          {brandName}
         </Link>
 
         <ul className="hidden md:flex items-center gap-1">

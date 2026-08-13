@@ -46,6 +46,31 @@ export function ensureSchema(sql: Sql) {
         at timestamptz NOT NULL DEFAULT now(),
         ok boolean NOT NULL
       )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS site_content (
+        key text PRIMARY KEY,
+        data jsonb NOT NULL,
+        updated_at timestamptz NOT NULL DEFAULT now()
+      )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS services (
+        id serial PRIMARY KEY,
+        slug text UNIQUE NOT NULL,
+        data jsonb NOT NULL,
+        visible boolean NOT NULL DEFAULT true,
+        sort_order integer NOT NULL DEFAULT 0,
+        updated_at timestamptz NOT NULL DEFAULT now()
+      )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS pages (
+        id serial PRIMARY KEY,
+        slug text UNIQUE NOT NULL,
+        data jsonb NOT NULL,
+        visible boolean NOT NULL DEFAULT true,
+        show_in_nav boolean NOT NULL DEFAULT false,
+        sort_order integer NOT NULL DEFAULT 0,
+        updated_at timestamptz NOT NULL DEFAULT now()
+      )`;
   })();
   return schemaReady;
 }
