@@ -35,11 +35,25 @@ export default async function EditProjectPage({
   const { slug } = await params;
 
   if (slug === "__new__") {
-    return <ProjectEditor originalSlug="__new__" project={BLANK} visible={true} />;
+    return (
+      <ProjectEditor
+        originalSlug="__new__"
+        project={BLANK}
+        visible={true}
+        hasDraft={false}
+      />
+    );
   }
 
   const project = (await getAllProjectsAdmin()).find((p) => p.slug === slug);
   if (!project) notFound();
-  const { visible, sortOrder: _sortOrder, ...data } = project;
-  return <ProjectEditor originalSlug={slug} project={data} visible={visible} />;
+  const { visible, sortOrder: _sortOrder, draft, ...data } = project;
+  return (
+    <ProjectEditor
+      originalSlug={slug}
+      project={draft ?? data}
+      visible={visible}
+      hasDraft={!!draft}
+    />
+  );
 }

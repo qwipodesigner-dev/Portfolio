@@ -16,6 +16,8 @@ export const PROJECTS_TAG = "projects";
 export type ManagedProject = Project & {
   visible: boolean;
   sortOrder: number;
+  /** Unpublished edits, if any (admin reads only) */
+  draft?: Project | null;
 };
 
 async function fetchAllFromDb(): Promise<ManagedProject[] | null> {
@@ -75,8 +77,26 @@ export async function getProjectBySlug(
 // ---------- Admin reads (everything, uncached) ----------
 
 export async function getAllProjectsAdmin(): Promise<ManagedProject[]> {
-  const fromDb = await fetchAllFromDb();
-  if (fromDb) return fromDb;
+  const sql = getDb();
+  if (sql) {
+    try {
+      await ensureSchema(sql);
+      const rows = (await sql`
+        SELECT slug, data, visible, sort_order, draft_data
+        FROM projects ORDER BY sort_order ASC, id ASC
+      `) as (ProjectRow & { draft_data: Project | null })[];
+      if (rows.length > 0)
+        return rows.map((r) => ({
+          ...r.data,
+          slug: r.slug,
+          visible: r.visible,
+          sortOrder: r.sort_order,
+          draft: r.draft_data,
+        }));
+    } catch (err) {
+      console.error("[content] admin DB read failed:", err);
+    }
+  }
   return seedProjects.map((p, i) => ({ ...p, visible: true, sortOrder: i }));
 }
 

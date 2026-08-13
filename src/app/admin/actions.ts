@@ -18,6 +18,7 @@ import { PROJECTS_TAG, seedDatabase } from "@/lib/content";
 import { SERVICES_TAG, seedServicesDb } from "@/lib/services-data";
 import { PAGES_TAG, type CustomPage } from "@/lib/pages-data";
 import { SITE_TAG, type SiteContentKey } from "@/lib/site";
+import { getRevision, snapshot, type RevisionKind } from "@/lib/revisions";
 import type { Project } from "@/lib/projects";
 import type { Service } from "@/lib/services";
 
@@ -106,11 +107,14 @@ async function db() {
   return sql;
 }
 
-/** Full save of a project's content (called from the editor). */
+/** Full save of a project's content (called from the editor).
+ *  mode "draft" stores to draft_data without touching the live site;
+ *  mode "publish" snapshots the old version, goes live, clears the draft. */
 export async function saveProjectAction(
   slug: string,
   project: Project,
   visible: boolean,
+  mode: "publish" | "draft" = "publish",
 ): Promise<{ error?: string; slug?: string }> {
   await requireAdmin();
   const sql = await db();
@@ -124,15 +128,23 @@ export async function saveProjectAction(
         INSERT INTO projects (slug, data, visible, sort_order)
         VALUES (${nextSlug}, ${JSON.stringify(project)}::jsonb, ${visible}, ${max[0].m + 1})
       `;
-    } else {
+    } else if (mode === "draft") {
       const rows = (await sql`
-        UPDATE projects
-        SET slug = ${nextSlug}, data = ${JSON.stringify(project)}::jsonb,
-            visible = ${visible}, updated_at = now()
-        WHERE slug = ${slug}
-        RETURNING slug
+        UPDATE projects SET draft_data = ${JSON.stringify(project)}::jsonb, updated_at = now()
+        WHERE slug = ${slug} RETURNING slug
       `) as unknown[];
       if (rows.length === 0) return { error: `Project "${slug}" not found.` };
+      return { slug };
+    } else {
+      const current = (await sql`SELECT data FROM projects WHERE slug = ${slug}`) as { data: unknown }[];
+      if (current.length === 0) return { error: `Project "${slug}" not found.` };
+      await snapshot(sql, "project", slug, current[0].data);
+      await sql`
+        UPDATE projects
+        SET slug = ${nextSlug}, data = ${JSON.stringify(project)}::jsonb,
+            visible = ${visible}, draft_data = NULL, updated_at = now()
+        WHERE slug = ${slug}
+      `;
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Save failed.";
@@ -141,6 +153,63 @@ export async function saveProjectAction(
   publish(slug);
   publish(nextSlug);
   return { slug: nextSlug };
+}
+
+export async function discardDraftAction(
+  kind: "project" | "page",
+  slug: string,
+) {
+  await requireAdmin();
+  const sql = await db();
+  if (kind === "project") {
+    await sql`UPDATE projects SET draft_data = NULL WHERE slug = ${slug}`;
+  } else {
+    await sql`UPDATE pages SET draft_data = NULL WHERE slug = ${slug}`;
+  }
+}
+
+// ---------- Revisions ----------
+
+export async function restoreRevisionAction(
+  id: number,
+): Promise<{ error?: string }> {
+  await requireAdmin();
+  const rev = await getRevision(id);
+  if (!rev) return { error: "Revision not found." };
+  const sql = await db();
+  const kind = rev.kind as RevisionKind;
+  const json = JSON.stringify(rev.data);
+  if (kind === "project" || kind === "service" || kind === "page") {
+    // Snapshot what's live now so the restore itself is undoable
+    const current =
+      kind === "project"
+        ? ((await sql`SELECT data FROM projects WHERE slug = ${rev.ref}`) as { data: unknown }[])
+        : kind === "service"
+          ? ((await sql`SELECT data FROM services WHERE slug = ${rev.ref}`) as { data: unknown }[])
+          : ((await sql`SELECT data FROM pages WHERE slug = ${rev.ref}`) as { data: unknown }[]);
+    if (current.length === 0)
+      return { error: `The ${kind} "${rev.ref}" no longer exists — restore isn't possible.` };
+    await snapshot(sql, kind, rev.ref, current[0].data);
+    if (kind === "project") {
+      await sql`UPDATE projects SET data = ${json}::jsonb, updated_at = now() WHERE slug = ${rev.ref}`;
+      publish(rev.ref);
+    } else if (kind === "service") {
+      await sql`UPDATE services SET data = ${json}::jsonb, updated_at = now() WHERE slug = ${rev.ref}`;
+      publishServices(rev.ref);
+    } else {
+      await sql`UPDATE pages SET data = ${json}::jsonb, updated_at = now() WHERE slug = ${rev.ref}`;
+      publishPages(rev.ref);
+    }
+  } else {
+    const current = (await sql`SELECT data FROM site_content WHERE key = ${rev.ref}`) as { data: unknown }[];
+    if (current.length > 0) await snapshot(sql, "site", rev.ref, current[0].data);
+    await sql`
+      INSERT INTO site_content (key, data) VALUES (${rev.ref}, ${json}::jsonb)
+      ON CONFLICT (key) DO UPDATE SET data = EXCLUDED.data, updated_at = now()
+    `;
+    publishSite();
+  }
+  return {};
 }
 
 export async function toggleVisibleAction(slug: string, visible: boolean) {
@@ -181,6 +250,8 @@ export async function saveSiteContentAction(
   await requireAdmin();
   const sql = await db();
   try {
+    const current = (await sql`SELECT data FROM site_content WHERE key = ${key}`) as { data: unknown }[];
+    if (current.length > 0) await snapshot(sql, "site", key, current[0].data);
     await sql`
       INSERT INTO site_content (key, data)
       VALUES (${key}, ${JSON.stringify(data)}::jsonb)
@@ -227,14 +298,15 @@ export async function saveServiceAction(
         VALUES (${nextSlug}, ${JSON.stringify(service)}::jsonb, ${visible}, ${max[0].m + 1})
       `;
     } else {
-      const rows = (await sql`
+      const current = (await sql`SELECT data FROM services WHERE slug = ${slug}`) as { data: unknown }[];
+      if (current.length === 0) return { error: `Service "${slug}" not found.` };
+      await snapshot(sql, "service", slug, current[0].data);
+      await sql`
         UPDATE services
         SET slug = ${nextSlug}, data = ${JSON.stringify(service)}::jsonb,
             visible = ${visible}, updated_at = now()
         WHERE slug = ${slug}
-        RETURNING slug
-      `) as unknown[];
-      if (rows.length === 0) return { error: `Service "${slug}" not found.` };
+      `;
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Save failed.";
@@ -290,6 +362,7 @@ export async function savePageAction(
   page: CustomPage,
   visible: boolean,
   showInNav: boolean,
+  mode: "publish" | "draft" = "publish",
 ): Promise<{ error?: string; slug?: string }> {
   await requireAdmin();
   const sql = await db();
@@ -305,15 +378,24 @@ export async function savePageAction(
         INSERT INTO pages (slug, data, visible, show_in_nav, sort_order)
         VALUES (${nextSlug}, ${JSON.stringify(page)}::jsonb, ${visible}, ${showInNav}, ${max[0].m + 1})
       `;
-    } else {
+    } else if (mode === "draft") {
       const rows = (await sql`
-        UPDATE pages
-        SET slug = ${nextSlug}, data = ${JSON.stringify(page)}::jsonb,
-            visible = ${visible}, show_in_nav = ${showInNav}, updated_at = now()
-        WHERE slug = ${slug}
-        RETURNING slug
+        UPDATE pages SET draft_data = ${JSON.stringify(page)}::jsonb, updated_at = now()
+        WHERE slug = ${slug} RETURNING slug
       `) as unknown[];
       if (rows.length === 0) return { error: `Page "${slug}" not found.` };
+      return { slug };
+    } else {
+      const current = (await sql`SELECT data FROM pages WHERE slug = ${slug}`) as { data: unknown }[];
+      if (current.length === 0) return { error: `Page "${slug}" not found.` };
+      await snapshot(sql, "page", slug, current[0].data);
+      await sql`
+        UPDATE pages
+        SET slug = ${nextSlug}, data = ${JSON.stringify(page)}::jsonb,
+            visible = ${visible}, show_in_nav = ${showInNav}, draft_data = NULL,
+            updated_at = now()
+        WHERE slug = ${slug}
+      `;
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Save failed.";
@@ -336,6 +418,20 @@ export async function deletePageAction(slug: string) {
   const sql = await db();
   await sql`DELETE FROM pages WHERE slug = ${slug}`;
   publishPages(slug);
+}
+
+// ---------- Inbox ----------
+
+export async function markMessageHandledAction(id: number, handled: boolean) {
+  await requireAdmin();
+  const sql = await db();
+  await sql`UPDATE messages SET handled = ${handled} WHERE id = ${id}`;
+}
+
+export async function deleteMessageAction(id: number) {
+  await requireAdmin();
+  const sql = await db();
+  await sql`DELETE FROM messages WHERE id = ${id}`;
 }
 
 // ---------- Resume ----------

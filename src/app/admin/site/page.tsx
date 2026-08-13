@@ -41,6 +41,11 @@ const SURFACES = [
     title: "Footer",
     blurb: "Headline, sitemap, social links, email, copyright.",
   },
+  {
+    key: "seo",
+    title: "SEO & sharing",
+    blurb: "Site title, meta description, keywords, social-share image.",
+  },
 ];
 
 export default async function SiteContentHub() {

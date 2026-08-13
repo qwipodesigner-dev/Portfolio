@@ -44,13 +44,21 @@ export function SiteEditor({
           </Link>
           <h1 className="font-display text-4xl mt-3">{title}</h1>
         </div>
-        <button
-          onClick={save}
-          disabled={pending}
-          className="rounded-full bg-fg text-bg px-6 py-2.5 text-sm font-medium hover:bg-accent hover:text-white transition-colors disabled:opacity-50"
-        >
-          {pending ? "Publishing…" : saved ? "Published ✓" : "Save & publish"}
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/admin/history/site/${contentKey}`}
+            className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
+          >
+            History
+          </Link>
+          <button
+            onClick={save}
+            disabled={pending}
+            className="rounded-full bg-fg text-bg px-6 py-2.5 text-sm font-medium hover:bg-accent hover:text-white transition-colors disabled:opacity-50"
+          >
+            {pending ? "Publishing…" : saved ? "Published ✓" : "Save & publish"}
+          </button>
+        </div>
       </header>
 
       {error && (

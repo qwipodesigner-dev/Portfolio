@@ -56,13 +56,21 @@ export function ServiceEditor({
         </div>
         <div className="flex items-center gap-3">
           {originalSlug !== "__new__" && (
-            <Link
-              href={`/services/${originalSlug}`}
-              target="_blank"
-              className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
-            >
-              Preview ↗
-            </Link>
+            <>
+              <Link
+                href={`/admin/history/service/${originalSlug}`}
+                className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
+              >
+                History
+              </Link>
+              <Link
+                href={`/services/${originalSlug}`}
+                target="_blank"
+                className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
+              >
+                Preview ↗
+              </Link>
+            </>
           )}
           <button
             onClick={save}

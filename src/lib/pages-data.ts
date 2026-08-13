@@ -21,6 +21,8 @@ export type ManagedPage = CustomPage & {
   visible: boolean;
   showInNav: boolean;
   sortOrder: number;
+  /** Unpublished edits, if any (admin reads only) */
+  draft?: CustomPage | null;
 };
 
 type PageRow = {
@@ -29,23 +31,30 @@ type PageRow = {
   visible: boolean;
   show_in_nav: boolean;
   sort_order: number;
+  draft_data?: CustomPage | null;
 };
 
-async function fetchAll(): Promise<ManagedPage[]> {
+async function fetchAll(withDrafts = false): Promise<ManagedPage[]> {
   const sql = getDb();
   if (!sql) return [];
   try {
     await ensureSchema(sql);
-    const rows = (await sql`
-      SELECT slug, data, visible, show_in_nav, sort_order
-      FROM pages ORDER BY sort_order ASC, id ASC
-    `) as PageRow[];
+    const rows = (
+      withDrafts
+        ? await sql`
+            SELECT slug, data, visible, show_in_nav, sort_order, draft_data
+            FROM pages ORDER BY sort_order ASC, id ASC`
+        : await sql`
+            SELECT slug, data, visible, show_in_nav, sort_order
+            FROM pages ORDER BY sort_order ASC, id ASC`
+    ) as PageRow[];
     return rows.map((r) => ({
       ...r.data,
       slug: r.slug,
       visible: r.visible,
       showInNav: r.show_in_nav,
       sortOrder: r.sort_order,
+      draft: r.draft_data ?? null,
     }));
   } catch (err) {
     console.error("[pages] DB read failed:", err);
@@ -73,5 +82,5 @@ export async function getNavPages(): Promise<ManagedPage[]> {
 }
 
 export async function getAllPagesAdmin(): Promise<ManagedPage[]> {
-  return fetchAll();
+  return fetchAll(true);
 }

@@ -109,6 +109,11 @@ export function ProjectList({
                     Hidden
                   </span>
                 )}
+                {p.draft && (
+                  <span className="font-mono text-[9px] uppercase tracking-[0.18em] px-2 py-0.5 rounded-full border border-accent/40 text-accent">
+                    Draft
+                  </span>
+                )}
               </div>
               <p className="text-sm text-fg-muted mt-1">
                 {p.client} · {p.year} · /work/{p.slug}

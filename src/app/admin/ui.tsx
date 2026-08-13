@@ -478,6 +478,7 @@ export function AdminTabs({ active }: { active: string }) {
     { key: "services", label: "Services", href: "/admin/services" },
     { key: "pages", label: "Pages", href: "/admin/pages" },
     { key: "site", label: "Site content", href: "/admin/site" },
+    { key: "inbox", label: "Inbox", href: "/admin/inbox" },
     { key: "settings", label: "Settings", href: "/admin/settings" },
   ];
   return (

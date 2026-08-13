@@ -12,6 +12,7 @@ const TITLES: Record<SiteContentKey, string> = {
   nav: "Navigation",
   footer: "Footer",
   settings: "Settings",
+  seo: "SEO & sharing",
   workPage: "Work page header",
   servicesPage: "Services page header",
 };

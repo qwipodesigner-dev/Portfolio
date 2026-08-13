@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { CaseStudySection, Project } from "@/lib/projects";
-import { saveProjectAction } from "../../actions";
+import { discardDraftAction, saveProjectAction } from "../../actions";
 import { Field, SectionsEditor, labelCls as label } from "../../ui";
 
 /* Accent options mirror the palette already used across the site,
@@ -23,16 +23,19 @@ export function ProjectEditor({
   originalSlug,
   project: initial,
   visible: initialVisible,
+  hasDraft: initialHasDraft,
 }: {
   originalSlug: string;
   project: Project;
   visible: boolean;
+  hasDraft: boolean;
 }) {
   const router = useRouter();
   const [p, setP] = useState<Project>(initial);
   const [visible, setVisible] = useState(initialVisible);
+  const [hasDraft, setHasDraft] = useState(initialHasDraft);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<"published" | "drafted" | false>(false);
   const [pending, startTransition] = useTransition();
 
   const set = <K extends keyof Project>(key: K, value: Project[K]) =>
@@ -41,24 +44,33 @@ export function ProjectEditor({
   const setSections = (sections: CaseStudySection[]) =>
     setP((prev) => ({ ...prev, sections }));
 
-  const save = () => {
+  const save = (mode: "publish" | "draft") => {
     setError(null);
     if (!p.title.trim()) return setError("Title is required.");
     if (!p.slug.trim() && originalSlug === "__new__")
       set("slug", p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
     startTransition(async () => {
-      const res = await saveProjectAction(originalSlug, p, visible);
+      const res = await saveProjectAction(originalSlug, p, visible, mode);
       if (res.error) {
         setError(res.error);
       } else {
-        setSaved(true);
+        setSaved(mode === "draft" ? "drafted" : "published");
+        setHasDraft(mode === "draft");
         setTimeout(() => setSaved(false), 2500);
         if (originalSlug === "__new__") router.push("/admin");
-        else if (res.slug && res.slug !== originalSlug)
+        else if (mode === "publish" && res.slug && res.slug !== originalSlug)
           router.replace(`/admin/projects/${res.slug}`);
       }
     });
   };
+
+  const discard = () =>
+    startTransition(async () => {
+      await discardDraftAction("project", originalSlug);
+      setHasDraft(false);
+      router.refresh();
+      window.location.reload();
+    });
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
@@ -72,24 +84,53 @@ export function ProjectEditor({
           </Link>
           <h1 className="font-display text-4xl mt-3">
             {originalSlug === "__new__" ? "New project" : `Edit · ${initial.title}`}
+            {hasDraft && (
+              <span className="ml-3 align-middle font-mono text-[9px] uppercase tracking-[0.18em] px-2 py-1 rounded-full border border-accent/40 text-accent">
+                Draft pending
+              </span>
+            )}
           </h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           {originalSlug !== "__new__" && (
-            <Link
-              href={`/work/${originalSlug}`}
-              target="_blank"
-              className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
-            >
-              Preview ↗
-            </Link>
+            <>
+              <Link
+                href={`/admin/history/project/${originalSlug}`}
+                className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
+              >
+                History
+              </Link>
+              <Link
+                href={`/admin/preview/project/${originalSlug}`}
+                target="_blank"
+                className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors"
+              >
+                Preview ↗
+              </Link>
+              {hasDraft && (
+                <button
+                  onClick={discard}
+                  disabled={pending}
+                  className="rounded-full border border-border px-4 py-2 text-sm text-fg-muted hover:border-red-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                >
+                  Discard draft
+                </button>
+              )}
+              <button
+                onClick={() => save("draft")}
+                disabled={pending}
+                className="rounded-full border border-border px-4 py-2 text-sm hover:border-fg transition-colors disabled:opacity-50"
+              >
+                {saved === "drafted" ? "Draft saved ✓" : "Save draft"}
+              </button>
+            </>
           )}
           <button
-            onClick={save}
+            onClick={() => save("publish")}
             disabled={pending}
             className="rounded-full bg-fg text-bg px-6 py-2.5 text-sm font-medium hover:bg-accent hover:text-white transition-colors disabled:opacity-50"
           >
-            {pending ? "Publishing…" : saved ? "Published ✓" : "Save & publish"}
+            {pending ? "Saving…" : saved === "published" ? "Published ✓" : "Publish"}
           </button>
         </div>
       </header>
@@ -237,13 +278,22 @@ export function ProjectEditor({
         <SectionsEditor sections={p.sections} onChange={setSections} />
       </section>
 
-      <div className="mt-12 pt-8 border-t border-border flex justify-end">
+      <div className="mt-12 pt-8 border-t border-border flex justify-end gap-2">
+        {originalSlug !== "__new__" && (
+          <button
+            onClick={() => save("draft")}
+            disabled={pending}
+            className="rounded-full border border-border px-6 py-3.5 text-sm hover:border-fg transition-colors disabled:opacity-50"
+          >
+            {saved === "drafted" ? "Draft saved ✓" : "Save draft"}
+          </button>
+        )}
         <button
-          onClick={save}
+          onClick={() => save("publish")}
           disabled={pending}
           className="rounded-full bg-fg text-bg px-8 py-3.5 font-medium hover:bg-accent hover:text-white transition-colors disabled:opacity-50"
         >
-          {pending ? "Publishing…" : saved ? "Published ✓" : "Save & publish"}
+          {pending ? "Saving…" : saved === "published" ? "Published ✓" : "Publish"}
         </button>
       </div>
     </div>

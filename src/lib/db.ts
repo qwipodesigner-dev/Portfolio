@@ -71,6 +71,28 @@ export function ensureSchema(sql: Sql) {
         sort_order integer NOT NULL DEFAULT 0,
         updated_at timestamptz NOT NULL DEFAULT now()
       )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS messages (
+        id serial PRIMARY KEY,
+        name text NOT NULL,
+        email text NOT NULL,
+        message text NOT NULL,
+        handled boolean NOT NULL DEFAULT false,
+        created_at timestamptz NOT NULL DEFAULT now()
+      )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS revisions (
+        id serial PRIMARY KEY,
+        kind text NOT NULL,
+        ref text NOT NULL,
+        data jsonb NOT NULL,
+        created_at timestamptz NOT NULL DEFAULT now()
+      )`;
+    await sql`CREATE INDEX IF NOT EXISTS revisions_kind_ref ON revisions (kind, ref, id DESC)`;
+    // Draft support — pending edits live here until published
+    await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS draft_data jsonb`;
+    await sql`ALTER TABLE services ADD COLUMN IF NOT EXISTS draft_data jsonb`;
+    await sql`ALTER TABLE pages ADD COLUMN IF NOT EXISTS draft_data jsonb`;
   })();
   return schemaReady;
 }

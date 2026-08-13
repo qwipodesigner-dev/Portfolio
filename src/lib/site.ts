@@ -121,6 +121,18 @@ export type SiteSettings = {
   resumeUrl: string;
 };
 
+export type SeoContent = {
+  /** Base site title (browser tab, search results) */
+  siteTitle: string;
+  /** Template for inner pages — %s is replaced by the page title */
+  titleTemplate: string;
+  description: string;
+  keywords: string[];
+  /** Absolute URL of the social-share (Open Graph) image, optional */
+  ogImage: string;
+  siteUrl: string;
+};
+
 export type WorkPageContent = {
   eyebrow: string;
   heading: string;
@@ -330,6 +342,24 @@ export const siteDefaults = {
   settings: {
     resumeUrl: "/resume.pdf",
   } satisfies SiteSettings,
+
+  seo: {
+    siteTitle: "Vikas Mittapalli — Senior Product Designer",
+    titleTemplate: "%s · Vikas Mittapalli",
+    description:
+      "Senior Product Designer with 6+ years of experience crafting scalable B2B, healthcare, and logistics products. Currently at Qwipo, previously AIG, KIMS, Continental, and Aster Hospitals.",
+    keywords: [
+      "Product Designer",
+      "UI/UX Designer",
+      "Healthcare Design",
+      "Design Systems",
+      "B2B SaaS",
+      "Vikas Mittapalli",
+      "Hyderabad",
+    ],
+    ogImage: "",
+    siteUrl: "https://vikasmittapalli.com",
+  } satisfies SeoContent,
 
   workPage: {
     eyebrow: "Work · 2021 — Now",

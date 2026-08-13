@@ -30,19 +30,21 @@ export default async function EditCustomPage({
         page={BLANK}
         visible={true}
         showInNav={false}
+        hasDraft={false}
       />
     );
   }
 
   const page = (await getAllPagesAdmin()).find((p) => p.slug === slug);
   if (!page) notFound();
-  const { visible, showInNav, sortOrder: _sortOrder, ...data } = page;
+  const { visible, showInNav, sortOrder: _sortOrder, draft, ...data } = page;
   return (
     <PageEditor
       originalSlug={slug}
-      page={data}
+      page={draft ?? data}
       visible={visible}
       showInNav={showInNav}
+      hasDraft={!!draft}
     />
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { submitMessageAction } from "@/app/(site)/contact/actions";
 
 type Status = "idle" | "sending" | "success" | "error";
 
@@ -27,9 +28,15 @@ export function ContactForm() {
     e.preventDefault();
     if (!validate()) return;
     setStatus("sending");
-    // Mock submission — wire to Resend / Formspree later
-    await new Promise((r) => setTimeout(r, 900));
-    setStatus("success");
+    const honeypot =
+      (new FormData(e.currentTarget).get("company") as string) || undefined;
+    const res = await submitMessageAction({ ...values, company: honeypot });
+    if (res.ok) {
+      setStatus("success");
+    } else {
+      setStatus("error");
+      setErrors({ message: res.error ?? "Something went wrong — try again." });
+    }
   }
 
   if (status === "success") {
@@ -56,6 +63,15 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-8" noValidate>
+      {/* Honeypot — hidden from real users, bots fill it and get dropped */}
+      <input
+        type="text"
+        name="company"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-0 w-0 opacity-0"
+      />
       <Field
         label="Name"
         name="name"

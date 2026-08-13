@@ -3,6 +3,7 @@ import { Fraunces, Inter, JetBrains_Mono, Lexend } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import { getSiteContent } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,41 +32,35 @@ const lexend = Lexend({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://vikasmittapalli.com"),
-  title: {
-    default: "Vikas Mittapalli — Senior Product Designer",
-    template: "%s · Vikas Mittapalli",
-  },
-  description:
-    "Senior Product Designer with 6+ years of experience crafting scalable B2B, healthcare, and logistics products. Currently at Qwipo, previously AIG, KIMS, Continental, and Aster Hospitals.",
-  keywords: [
-    "Product Designer",
-    "UI/UX Designer",
-    "Healthcare Design",
-    "Design Systems",
-    "B2B SaaS",
-    "Vikas Mittapalli",
-    "Hyderabad",
-  ],
-  authors: [{ name: "Vikas Mittapalli" }],
-  creator: "Vikas Mittapalli",
-  openGraph: {
-    type: "website",
-    locale: "en_IN",
-    url: "https://vikasmittapalli.com",
-    title: "Vikas Mittapalli — Senior Product Designer",
-    description:
-      "6+ years designing scalable B2B, healthcare, and logistics products. Design systems, research, and end-to-end product design.",
-    siteName: "Vikas Mittapalli",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Vikas Mittapalli — Senior Product Designer",
-    description:
-      "6+ years designing scalable B2B, healthcare, and logistics products.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getSiteContent("seo");
+  return {
+    metadataBase: new URL(seo.siteUrl),
+    title: {
+      default: seo.siteTitle,
+      template: seo.titleTemplate,
+    },
+    description: seo.description,
+    keywords: seo.keywords,
+    authors: [{ name: "Vikas Mittapalli" }],
+    creator: "Vikas Mittapalli",
+    openGraph: {
+      type: "website",
+      locale: "en_IN",
+      url: seo.siteUrl,
+      title: seo.siteTitle,
+      description: seo.description,
+      siteName: "Vikas Mittapalli",
+      ...(seo.ogImage ? { images: [seo.ogImage] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.siteTitle,
+      description: seo.description,
+      ...(seo.ogImage ? { images: [seo.ogImage] } : {}),
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [
