@@ -1,9 +1,41 @@
-export type CaseStudySection = {
+/** Classic text section — the pattern every existing case study uses. */
+export type TextSection = {
+  /** Discriminator; omitted in legacy seed data, treated as "text". */
+  type?: "text";
   eyebrow: string;
   title: string;
   body: string;
   bullets?: string[];
 };
+
+/** Full-width image block (uploaded to Blob or external URL). */
+export type ImageSection = {
+  type: "image";
+  src: string;
+  alt?: string;
+  caption?: string;
+};
+
+/** Video block — direct file URL or YouTube/Vimeo embed URL. */
+export type VideoSection = {
+  type: "video";
+  src: string;
+  caption?: string;
+};
+
+/** Embedded external page (Figma prototype, live site, etc.). */
+export type EmbedSection = {
+  type: "embed";
+  url: string;
+  caption?: string;
+  height?: number;
+};
+
+export type CaseStudySection =
+  | TextSection
+  | ImageSection
+  | VideoSection
+  | EmbedSection;
 
 export type Project = {
   slug: string;
@@ -22,6 +54,10 @@ export type Project = {
   reflection?: string;
   /** Optional live URL for the project — embedded as an iframe preview below the reflection */
   liveUrl?: string;
+  /** Optional heading for the live preview block — falls back to a generic one */
+  liveHeading?: string;
+  /** Optional caption for the live preview block — falls back to a generic one */
+  liveCaption?: string;
 };
 
 export const projects: Project[] = [
@@ -42,6 +78,9 @@ export const projects: Project[] = [
     outcome:
       "ONDC-aligned seller platform powering distributor and DMS operations",
     liveUrl: "https://seller-store-nine.vercel.app/login",
+    liveHeading: "See it in production.",
+    liveCaption:
+      "The live seller platform rendered at desktop dimensions — try the flows, poke at the screens. Open in a new tab for full-screen interaction.",
     sections: [
       {
         eyebrow: "01 · Context",
@@ -172,48 +211,53 @@ export const projects: Project[] = [
     slug: "qwipo-buyer-app",
     title: "Qwipo Buyer App",
     tagline:
-      "One app for retailers to buy from every distributor — live on iOS and Android",
+      "The ONDC-powered buying app for retailers — the demand side of the entire Qwipo ecosystem",
     description:
-      "A B2B retail commerce app that lets retailers compare pricing, place multi-seller orders, track deliveries, and access credit — replacing the fragmented stack of brand-specific apps like ITC Unnati and HUL Shikhar.",
+      "An ONDC-supported B2B commerce app where retailers buy from authorised distributors, wholesalers, and local vendors in one place — multi-seller carts, order tracking, credit, and reorder flows. Everything sellers and vendors publish upstream lands here, making this the surface that drives the whole business.",
     role: "Senior Product Designer",
-    year: "2025 — Present",
+    year: "Dec 2025 — Present",
     client: "Qwipo",
-    stack: ["Figma", "Mobile-first", "B2B", "iOS / Android"],
+    stack: ["Figma", "Mobile-first", "ONDC", "B2B Commerce"],
     cover: "/images/projects/qwipo-buyer-cover.jpg",
     accent: "#F39B5A",
     featured: true,
     outcome:
-      "Live on Play Store and App Store, replacing the multi-app retailer stack",
+      "The retailer-facing core of the Qwipo ecosystem — ONDC-powered, in active build",
+    liveUrl: "https://qwipo-buyer-app.vercel.app/",
+    liveHeading: "Walk the screens yourself.",
+    liveCaption:
+      "The full mobile flow — 33 screens across auth, browse, shop, cart, orders, and account — rendered in a live gallery. Pick a screen from the list and explore.",
     sections: [
       {
         eyebrow: "01 · Context",
-        title: "Retailers shouldn't need fifteen apps to buy from fifteen distributors.",
-        body: "Most Indian retailers source from a handful of brands and distributors — which historically meant juggling apps like ITC Unnati, HUL Shikhar, and a dozen distributor-specific ones, each with its own login, catalogue, and quirks. Qwipo Buyer is the alternative: one app to compare, order, and track from every distributor a retailer works with.",
+        title:
+          "Where the whole ecosystem converges: the app retailers actually buy from.",
+        body: "Qwipo Buyer is the retailer-facing side of the Qwipo platform — an ONDC-supported (DigiDukaan) commerce app where retailers buy from authorised distributors, wholesalers, and local vendors. Everything the ecosystem produces flows into it: catalogs and pricing published through Qwipo Seller Store, supply onboarded through the vendor management platform. If sellers are the supply, this is the demand — the surface that drives the entire business. Retailers shouldn't need fifteen apps to buy from fifteen distributors; this is the one app that replaces the stack.",
       },
       {
         eyebrow: "02 · Discovery & Research",
         title: "Designing for one-handed mobile use under time pressure.",
-        body: "Retailers don't browse — they buy. The mobile context is busy: a counter, a customer waiting, a phone in one hand. Research focused on the moments retailers actually open the app — morning restocks, mid-day urgent orders, end-of-day reconciliation.",
+        body: "Retailers don't browse — they buy. The mobile context is busy: a counter, a customer waiting, a phone in one hand. Research focused on the moments retailers actually open the app — morning restocks, mid-day urgent orders, end-of-day reconciliation — and on how buying differs between an authorised distributor relationship and an open wholesaler or local vendor.",
         bullets: [
-          "Retailer purchasing-cycle interviews across geographies",
+          "Retailer purchasing-cycle interviews across geographies and store formats",
           "Friction audits on existing distributor apps to identify recurring pain points",
-          "Schemes, offers, and trust signals that drive buying decisions",
-          "Credit, payments, and partner integrations mapped into the buying flow",
+          "Authorised-distributor vs wholesaler vs local-vendor buying behaviours mapped separately",
+          "Schemes, offers, credit, and trust signals that actually drive purchase decisions",
         ],
       },
       {
         eyebrow: "03 · Approach",
         title: "Compress every flow into the smallest number of taps that still feels safe.",
-        body: "Product discovery uses unified search across distributors with transparent pricing and scheme visibility. A multi-seller cart lets retailers stack orders from different distributors in one checkout. Trust is baked in — clear delivery promises, payment options, and credit-partner visibility on every order.",
+        body: "The app is organised the way a retailer thinks: authorised distributor storefronts for routine supply, wholesaler and local-vendor catalogs for everything else, global search across all of it. A multi-seller cart lets retailers stack orders from different sellers in one checkout, with offers and coupons applied at summary. Reorder turns last week's purchase into this week's two-tap task. Trust is baked in — KYC-gated onboarding, transparent pricing, delivery tracking, and Qwipo Credit visible inside the buying flow, not bolted on after it.",
       },
       {
         eyebrow: "04 · Outcome",
-        title: "Live on Play Store and App Store, replacing the app stack.",
-        body: "Retailers now place multi-distributor orders from a single screen, with tracking and credit access in the same flow. Onboarding has been tuned for retailers with varying device experience, and the buyer side now plugs cleanly into the seller and logistics platforms.",
+        title: "The demand-side core of the platform, in active build.",
+        body: "Thirty-plus screens are designed and prototyped end to end — auth and KYC, distributor and wholesaler browsing, multi-seller cart and checkout, order tracking, credit, invoices, and a full account layer with language and notification preferences. The buyer side plugs directly into the seller and vendor platforms upstream, so every catalog published there is immediately buyable here. It's the screen where the whole ecosystem becomes revenue.",
       },
     ],
     reflection:
-      "B2B mobile is a different game from B2C. Speed wins, decoration loses.",
+      "When one app is the revenue surface for an entire ecosystem, every design decision is a business decision. Speed wins, decoration loses.",
   },
   {
     slug: "nephroplus-guest",
@@ -355,10 +399,7 @@ export const projects: Project[] = [
   },
 ];
 
-export function getFeaturedProjects() {
-  return projects.filter((p) => p.featured);
-}
-
-export function getProjectBySlug(slug: string) {
-  return projects.find((p) => p.slug === slug);
-}
+// NOTE: this file is now the *seed / fallback* content source.
+// Live content is served from the database via src/lib/content.ts;
+// these static entries are used to seed the DB and as a fallback
+// when the DB is unreachable, so the public site never breaks.

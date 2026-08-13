@@ -4,12 +4,12 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
 import { EmbedPreview } from "@/components/embed-preview";
-import { getProjectBySlug, projects } from "@/lib/projects";
+import { getProjectBySlug, getVisibleProjects } from "@/lib/content";
 
 type Params = { slug: string };
 
 export async function generateStaticParams(): Promise<Params[]> {
-  return projects.map((p) => ({ slug: p.slug }));
+  return (await getVisibleProjects()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return {};
   return {
     title: project.title,
@@ -32,9 +32,10 @@ export default async function CaseStudyPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
+  const projects = await getVisibleProjects();
   const currentIndex = projects.findIndex((p) => p.slug === slug);
   const nextProject = projects[(currentIndex + 1) % projects.length];
 
@@ -126,38 +127,82 @@ export default async function CaseStudyPage({
       <section className="py-24 md:py-32">
         <Container size="sm">
           {project.sections.map((section, idx) => (
-            <Reveal key={section.eyebrow} delay={idx * 0.08}>
-              <div
-                className={
-                  idx === 0 ? "" : "mt-16 pt-16 border-t border-border"
-                }
-              >
-                <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-                  {section.eyebrow}
-                </span>
-                <h2 className="font-display text-3xl md:text-4xl mt-4 mb-6 text-balance">
-                  {section.title}
-                </h2>
-                <p className="text-fg-muted text-lg leading-relaxed text-pretty">
-                  {section.body}
-                </p>
-                {section.bullets && (
-                  <ul className="mt-6 flex flex-col gap-3">
-                    {section.bullets.map((b, i) => (
-                      <li
-                        key={i}
-                        className="flex gap-4 text-fg-muted leading-relaxed"
-                      >
-                        <span
-                          aria-hidden
-                          className="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-accent flex-none"
-                        />
-                        <span className="text-pretty">{b}</span>
-                      </li>
+            <Reveal key={idx} delay={idx * 0.08}>
+              {!section.type || section.type === "text" ? (
+                <div
+                  className={
+                    idx === 0 ? "" : "mt-16 pt-16 border-t border-border"
+                  }
+                >
+                  <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
+                    {section.eyebrow}
+                  </span>
+                  <h2 className="font-display text-3xl md:text-4xl mt-4 mb-6 text-balance">
+                    {section.title}
+                  </h2>
+                  <p className="text-fg-muted text-lg leading-relaxed text-pretty">
+                    {section.body}
+                  </p>
+                  {section.bullets && (
+                    <ul className="mt-6 flex flex-col gap-3">
+                      {section.bullets.map((b, i) => (
+                        <li
+                          key={i}
+                          className="flex gap-4 text-fg-muted leading-relaxed"
+                        >
+                          <span
+                            aria-hidden
+                            className="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-accent flex-none"
+                          />
+                          <span className="text-pretty">{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : (
+                <figure className="mt-12">
+                  {section.type === "image" && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={section.src}
+                      alt={section.alt ?? ""}
+                      className="w-full rounded-2xl border border-border"
+                      loading="lazy"
+                    />
+                  )}
+                  {section.type === "video" &&
+                    (/youtube\.com|youtu\.be|vimeo\.com/.test(section.src) ? (
+                      <iframe
+                        src={section.src}
+                        className="w-full aspect-video rounded-2xl border border-border"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowFullScreen
+                        title={section.caption ?? "Project video"}
+                      />
+                    ) : (
+                      <video
+                        src={section.src}
+                        controls
+                        playsInline
+                        className="w-full rounded-2xl border border-border"
+                      />
                     ))}
-                  </ul>
-                )}
-              </div>
+                  {section.type === "embed" && (
+                    <iframe
+                      src={section.url}
+                      className="w-full rounded-2xl border border-border"
+                      style={{ height: section.height ?? 480 }}
+                      title={section.caption ?? "Embedded content"}
+                    />
+                  )}
+                  {"caption" in section && section.caption && (
+                    <figcaption className="font-mono text-[10px] uppercase tracking-[0.22em] text-fg-subtle mt-3">
+                      {section.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              )}
             </Reveal>
           ))}
 
@@ -179,8 +224,11 @@ export default async function CaseStudyPage({
           <Container size="lg" className="mt-16 md:mt-20">
             <EmbedPreview
               url={project.liveUrl}
-              heading="See it in production."
-              caption="The live seller platform rendered at desktop dimensions — try the flows, poke at the screens. Open in a new tab for full-screen interaction."
+              heading={project.liveHeading ?? "See it in production."}
+              caption={
+                project.liveCaption ??
+                "The live app rendered at desktop dimensions — try the flows, poke at the screens. Open in a new tab for full-screen interaction."
+              }
             />
           </Container>
         )}

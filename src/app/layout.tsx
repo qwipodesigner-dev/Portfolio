@@ -3,9 +3,6 @@ import { Fraunces, Inter, JetBrains_Mono, Lexend } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-import { Providers } from "@/components/providers";
-import { Nav } from "@/components/layout/nav";
-import { Footer } from "@/components/layout/footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -89,11 +86,7 @@ export default function RootLayout({
       className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${lexend.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-bg text-fg font-sans">
-        <Providers>
-          <Nav />
-          <main className="flex-1 pt-16">{children}</main>
-          <Footer />
-        </Providers>
+        {children}
         <Analytics />
         <SpeedInsights />
       </body>

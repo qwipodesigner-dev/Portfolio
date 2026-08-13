@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
-import { projects } from "@/lib/projects";
+import { getVisibleProjects } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
     "Selected projects from six years designing products across healthcare, logistics, and B2B SaaS.",
 };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const projects = await getVisibleProjects();
   return (
     <>
       <section className="pt-16 md:pt-24 pb-12 md:pb-16">

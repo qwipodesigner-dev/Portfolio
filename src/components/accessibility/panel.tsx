@@ -350,9 +350,13 @@ export function AccessibilityWidget() {
                   <RotateCcw className="h-3.5 w-3.5" />
                   Reset all
                 </button>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle">
+                {/* Quiet admin door — reads as the builder credit */}
+                <a
+                  href="/admin"
+                  className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle hover:text-fg transition-colors"
+                >
                   Built by Vikas Mittapalli
-                </p>
+                </a>
               </footer>
             </motion.aside>
           </>

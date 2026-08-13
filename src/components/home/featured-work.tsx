@@ -6,15 +6,13 @@ import { useRef } from "react";
 import { Container } from "../layout/container";
 import { Reveal } from "../reveal";
 import { SectionHeader } from "../layout/section";
-import { getFeaturedProjects } from "@/lib/projects";
-
-const projects = getFeaturedProjects();
+import type { Project } from "@/lib/projects";
 
 function ProjectCard({
   project,
   index,
 }: {
-  project: (typeof projects)[number];
+  project: Project;
   index: number;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
@@ -105,7 +103,7 @@ function ProjectCard({
   );
 }
 
-export function FeaturedWork() {
+export function FeaturedWork({ projects }: { projects: Project[] }) {
   return (
     <section
       id="work"
