@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
-import { ServiceImage } from "@/components/service-image";
+import { ServiceIllustration } from "@/components/service-illustrations";
 import { ToolLogo } from "@/components/tool-logo";
 import { getServiceBySlug, getVisibleServices } from "@/lib/services-data";
 
@@ -70,11 +70,10 @@ export default async function ServicePage({
 
         <Container size="lg">
           <Reveal delay={0.35}>
-            <ServiceImage
-              src={`/images/services/${service.slug}-hero.jpg`}
-              alt={`${service.title} — hero image`}
+            <ServiceIllustration
+              slug={service.slug}
+              variant="concept"
               caption={`${service.number} · ${service.title}`}
-              aspectRatio="16/9"
             />
           </Reveal>
         </Container>
@@ -107,11 +106,10 @@ export default async function ServicePage({
 
         <Container size="lg">
           <Reveal delay={0.2}>
-            <ServiceImage
-              src={`/images/services/${service.slug}-process.jpg`}
-              alt={`${service.title} — process image`}
+            <ServiceIllustration
+              slug={service.slug}
+              variant="process"
               caption="Process · in practice"
-              aspectRatio="16/9"
             />
           </Reveal>
         </Container>
@@ -184,11 +182,10 @@ export default async function ServicePage({
 
         <Container size="lg">
           <Reveal delay={0.2}>
-            <ServiceImage
-              src={`/images/services/${service.slug}-detail.jpg`}
-              alt={`${service.title} — detail image`}
+            <ServiceIllustration
+              slug={service.slug}
+              variant="artefacts"
               caption="Artefacts · what the work looks like"
-              aspectRatio="16/9"
             />
           </Reveal>
         </Container>
