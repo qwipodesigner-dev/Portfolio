@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
 import { ServiceImage } from "@/components/service-image";
+import { ToolLogo } from "@/components/tool-logo";
 import { getServiceBySlug, getVisibleServices } from "@/lib/services-data";
 
 type Params = { slug: string };
@@ -212,8 +213,9 @@ export default async function ServicePage({
               {service.tools.map((t) => (
                 <li
                   key={t}
-                  className="rounded-full border border-border bg-surface px-5 py-2 text-sm text-fg-muted hover:text-fg hover:border-fg transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-surface pl-3 pr-5 py-2 text-sm text-fg-muted hover:text-fg hover:border-fg transition-colors"
                 >
+                  <ToolLogo name={t} size={16} />
                   {t}
                 </li>
               ))}

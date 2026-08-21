@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/reveal";
 import { PortraitImage } from "@/components/portrait-image";
+import { ToolLogo } from "@/components/tool-logo";
 import { getSiteContent } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -204,10 +205,15 @@ export default async function AboutPage() {
                 as="li"
                 className="rounded-2xl border border-border bg-surface px-5 py-4 hover:border-fg transition-colors"
               >
-                <p className="font-display text-lg">{s.label}</p>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle mt-1">
-                  {s.level}
-                </p>
+                <div className="flex items-center gap-3">
+                  <ToolLogo name={s.label} size={26} />
+                  <div className="min-w-0">
+                    <p className="font-display text-lg">{s.label}</p>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle mt-1">
+                      {s.level}
+                    </p>
+                  </div>
+                </div>
               </Reveal>
             ))}
           </ul>
