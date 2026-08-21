@@ -287,7 +287,7 @@ export const siteDefaults = {
       { label: "Adobe XD", level: "Proficient" },
       { label: "After Effects", level: "Proficient" },
       { label: "Blender", level: "Learning" },
-      { label: "Front-end (React / Tailwind)", level: "Learning" },
+      { label: "Front-end", level: "Learning" },
     ],
   } satisfies AboutPageContent,
 
