@@ -158,6 +158,39 @@ const MARKS: Mark[] = [
   ),
 ];
 
+/* Official favicons (downloaded from each tool's own site) for tools
+   without a vector mark. Rendered on a white chip so dark marks stay
+   visible in dark mode. */
+const FAVICONS: { match: RegExp; file: string }[] = [
+  { match: /stark/i, file: "stark.png" },
+  { match: /ladle/i, file: "ladle.png" },
+  { match: /lookback/i, file: "lookback.png" },
+  { match: /optimal ?workshop/i, file: "optimalworkshop.png" },
+  { match: /polypane/i, file: "polypane.png" },
+  { match: /protopie/i, file: "protopie.png" },
+  { match: /user ?testing/i, file: "usertesting.png" },
+  { match: /whimsical/i, file: "whimsical.png" },
+  { match: /zeroheight/i, file: "zeroheight.png" },
+];
+
+function faviconChip(file: string, size: number) {
+  return (
+    <span
+      className="inline-flex items-center justify-center rounded-[5px] bg-white"
+      style={{ width: size, height: size }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`/logos/${file}`}
+        width={size - 4}
+        height={size - 4}
+        alt=""
+        className="rounded-[3px]"
+      />
+    </span>
+  );
+}
+
 export function ToolLogo({
   name,
   size = 24,
@@ -168,6 +201,7 @@ export function ToolLogo({
   className?: string;
 }) {
   const marks = MARKS.filter((m) => m.match.test(name)).slice(0, 2);
+  const favicon = FAVICONS.find((f) => f.match.test(name));
   return (
     <span
       className={`inline-flex items-center gap-1.5 flex-none ${className ?? ""}`}
@@ -175,7 +209,9 @@ export function ToolLogo({
     >
       {marks.length > 0
         ? marks.map((m, i) => <span key={i}>{m.render(size)}</span>)
-        : monogramTile(name, size)}
+        : favicon
+          ? faviconChip(favicon.file, size)
+          : monogramTile(name, size)}
     </span>
   );
 }
