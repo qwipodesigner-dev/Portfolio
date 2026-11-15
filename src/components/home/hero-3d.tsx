@@ -13,7 +13,7 @@ import * as THREE from "three";
 import { useTheme } from "next-themes";
 
 /**
- * Floating composition of design primitives — a rounded cube (the system),
+ * Floating composition of design primitives - a rounded cube (the system),
  * a wireframe cage (the structure), an accent sphere (the spark), and
  * floating rings + dots (the details). All meshes drift independently via
  * <Float>; OrbitControls owns the camera, so dragging anywhere on the
@@ -30,7 +30,7 @@ function DesignComposition() {
     // 0.85 gives strong on-screen presence while keeping everything in
     // frame for the rotation range the polar limits allow.
     <group scale={0.85}>
-      {/* Central rounded cube — primary system form */}
+      {/* Central rounded cube - primary system form */}
       <Float speed={1.2} rotationIntensity={0.4} floatIntensity={0.5}>
         <RoundedBox args={[1.3, 1.3, 1.3]} radius={0.18} smoothness={4}>
           <meshStandardMaterial
@@ -41,7 +41,7 @@ function DesignComposition() {
         </RoundedBox>
       </Float>
 
-      {/* Wireframe cage — structure around it */}
+      {/* Wireframe cage - structure around it */}
       <Float speed={0.7} rotationIntensity={0.3} floatIntensity={0.3}>
         <mesh>
           <boxGeometry args={[2.0, 2.0, 2.0]} />
@@ -54,7 +54,7 @@ function DesignComposition() {
         </mesh>
       </Float>
 
-      {/* Floating accent sphere — top right */}
+      {/* Floating accent sphere - top right */}
       <Float speed={2.2} rotationIntensity={0.2} floatIntensity={1.4}>
         <mesh position={[1.7, 0.85, 0.2]}>
           <icosahedronGeometry args={[0.18, 1]} />
@@ -66,7 +66,7 @@ function DesignComposition() {
         </mesh>
       </Float>
 
-      {/* Wireframe ring — bottom left, large */}
+      {/* Wireframe ring - bottom left, large */}
       <Float speed={1.6} rotationIntensity={1.5} floatIntensity={0.6}>
         <mesh
           position={[-1.5, -0.7, 0.4]}
@@ -77,7 +77,7 @@ function DesignComposition() {
         </mesh>
       </Float>
 
-      {/* Accent ring — top left, small */}
+      {/* Accent ring - top left, small */}
       <Float speed={1.4} rotationIntensity={1.0} floatIntensity={0.8}>
         <mesh
           position={[-1.3, 0.9, -0.3]}
@@ -88,7 +88,7 @@ function DesignComposition() {
         </mesh>
       </Float>
 
-      {/* Tiny accent dot — bottom right */}
+      {/* Tiny accent dot - bottom right */}
       <Float speed={2.6} floatIntensity={1.6}>
         <mesh position={[1.6, -1.0, 0.4]}>
           <sphereGeometry args={[0.06, 16, 16]} />
@@ -163,7 +163,7 @@ function Controls({
       rotateSpeed={0.85}
       autoRotate
       autoRotateSpeed={0.5}
-      // Keep the composition the right way up — don't let the user
+      // Keep the composition the right way up - don't let the user
       // rotate the camera below the floor or directly overhead.
       minPolarAngle={Math.PI / 3.2}
       maxPolarAngle={Math.PI / 1.8}
@@ -175,7 +175,7 @@ export function Hero3D() {
   const spinBoostRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Cursor: grab when hovering, grabbing when dragging — gives clear
+  // Cursor: grab when hovering, grabbing when dragging - gives clear
   // affordance that the cube is interactive.
   useEffect(() => {
     const el = containerRef.current;

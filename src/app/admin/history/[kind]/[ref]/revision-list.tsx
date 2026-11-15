@@ -16,7 +16,7 @@ export function RevisionList({ revisions }: { revisions: Revision[] }) {
     return (
       <div className="rounded-2xl border border-dashed border-border p-12 text-center">
         <p className="text-fg-muted">
-          No snapshots yet — they appear after your next publish.
+          No snapshots yet - they appear after your next publish.
         </p>
       </div>
     );

@@ -19,7 +19,7 @@ type Props = {
 /**
  * Renders an optional image with a colored gradient fallback. Used on
  * service detail pages where real photos / screenshots can be dropped
- * into /public/images/services/ later — until then, the gradient reads
+ * into /public/images/services/ later - until then, the gradient reads
  * as an editorial placeholder rather than a broken-image icon.
  */
 export function ServiceImage({

@@ -9,7 +9,7 @@ import { CustomPageView } from "@/components/custom-page-view";
 export const dynamic = "force-dynamic";
 
 /**
- * Admin-only draft preview — renders the draft version (falling back
+ * Admin-only draft preview - renders the draft version (falling back
  * to the published version) using the exact same view components as
  * the public routes, so what you see is what will ship.
  */
@@ -48,7 +48,7 @@ export default async function DraftPreviewPage({
       {/* Draft banner */}
       <div className="sticky top-0 z-50 flex items-center justify-center gap-4 border-b border-accent/40 bg-accent-soft px-6 py-3">
         <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent">
-          {hasDraft ? "Draft preview — not live" : "Preview — published version"}
+          {hasDraft ? "Draft preview - not live" : "Preview - published version"}
         </span>
         <Link
           href={editHref}

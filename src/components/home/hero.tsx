@@ -53,10 +53,10 @@ function AnimatedWords({ text, base = 0 }: { text: string; base?: number }) {
 export function Hero({ content }: { content: HeroContent }) {
   return (
     <section className="relative overflow-hidden pt-6 md:pt-16 pb-16 md:pb-32">
-      {/* subtle grid texture — sits behind everything */}
+      {/* subtle grid texture - sits behind everything */}
       <div className="absolute inset-0 -z-10 opacity-[0.04] [background-image:linear-gradient(to_right,var(--color-fg)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-fg)_1px,transparent_1px)] [background-size:48px_48px]" />
 
-      {/* 3D canvas — desktop only: absolute on the right side, widened to
+      {/* 3D canvas - desktop only: absolute on the right side, widened to
           give the cube real presence in the hero. Mobile renders a stacked
           instance below the copy (see further down). */}
       <div className="hidden md:block absolute inset-y-0 right-0 md:w-[52%] lg:w-[50%] md:h-full md:top-0 md:pr-4 lg:pr-8 pointer-events-auto opacity-95">
@@ -130,7 +130,7 @@ export function Hero({ content }: { content: HeroContent }) {
             </motion.div>
           </div>
 
-          {/* 3D canvas — mobile only: stacks below the copy, doesn't overlap */}
+          {/* 3D canvas - mobile only: stacks below the copy, doesn't overlap */}
           <div className="md:hidden relative h-[320px] xs:h-[360px] sm:h-[420px] w-full pointer-events-auto opacity-90">
             <Hero3D />
           </div>

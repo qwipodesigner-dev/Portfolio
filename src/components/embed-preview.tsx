@@ -7,10 +7,10 @@ type Props = {
   url: string;
   heading?: string;
   caption?: string;
-  /** Width to render the iframe at — the embedded app sees this as its viewport
+  /** Width to render the iframe at - the embedded app sees this as its viewport
    *  width, so set high enough that the app renders its desktop layout. */
   desktopWidth?: number;
-  /** Height to render the iframe at — sets the visible vertical area. */
+  /** Height to render the iframe at - sets the visible vertical area. */
   desktopHeight?: number;
 };
 
@@ -20,7 +20,7 @@ type Props = {
  * Renders the target URL inside an iframe at fixed desktop dimensions
  * (1440×900 by default) and uses CSS transform to scale the iframe down
  * to fit whatever container it's mounted in. The embedded app sees a
- * desktop-sized viewport and renders its full desktop layout — no
+ * desktop-sized viewport and renders its full desktop layout - no
  * responsive / mobile fallbacks.
  *
  * A faux browser chrome sits above the iframe with traffic-light dots,
@@ -42,7 +42,7 @@ export function EmbedPreview({
     const el = frameRef.current;
     if (!el) return;
     const updateScale = () => {
-      // Cap at 1 — don't upscale beyond native desktop size
+      // Cap at 1 - don't upscale beyond native desktop size
       const next = Math.min(1, el.clientWidth / desktopWidth);
       setScale(next);
     };
@@ -52,7 +52,7 @@ export function EmbedPreview({
     return () => ro.disconnect();
   }, [desktopWidth]);
 
-  // Visible height is the scaled iframe height — keeps the container shrink-wrapped
+  // Visible height is the scaled iframe height - keeps the container shrink-wrapped
   const visibleHeight = desktopHeight * scale;
 
   return (
@@ -118,7 +118,7 @@ export function EmbedPreview({
             </a>
           </div>
 
-          {/* Live iframe — rendered at desktop dimensions, scaled to fit */}
+          {/* Live iframe - rendered at desktop dimensions, scaled to fit */}
           <div
             ref={frameRef}
             className="relative bg-bg overflow-hidden"

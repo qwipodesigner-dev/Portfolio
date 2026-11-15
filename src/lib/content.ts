@@ -1,8 +1,9 @@
 import { unstable_cache } from "next/cache";
 import { getDb, ensureSchema } from "./db";
+import { plainHyphens } from "./normalize";
 import { projects as seedProjects, type Project } from "./projects";
 
-/** Row shape stored in Postgres — `data` holds the full Project object. */
+/** Row shape stored in Postgres - `data` holds the full Project object. */
 type ProjectRow = {
   slug: string;
   data: Project;
@@ -44,15 +45,17 @@ async function fetchAllFromDb(): Promise<ManagedProject[] | null> {
 }
 
 /**
- * Cached read of every project (including hidden ones — filtering
+ * Cached read of every project (including hidden ones - filtering
  * happens in the public helpers). Invalidated with revalidateTag
  * whenever the admin saves, so edits go live immediately.
  */
 const getAllCached = unstable_cache(
   async (): Promise<ManagedProject[]> => {
     const fromDb = await fetchAllFromDb();
-    if (fromDb) return fromDb;
-    return seedProjects.map((p, i) => ({ ...p, visible: true, sortOrder: i }));
+    if (fromDb) return plainHyphens(fromDb);
+    return plainHyphens(
+      seedProjects.map((p, i) => ({ ...p, visible: true, sortOrder: i })),
+    );
   },
   ["all-projects"],
   { tags: [PROJECTS_TAG] },
@@ -86,18 +89,22 @@ export async function getAllProjectsAdmin(): Promise<ManagedProject[]> {
         FROM projects ORDER BY sort_order ASC, id ASC
       `) as (ProjectRow & { draft_data: Project | null })[];
       if (rows.length > 0)
-        return rows.map((r) => ({
-          ...r.data,
-          slug: r.slug,
-          visible: r.visible,
-          sortOrder: r.sort_order,
-          draft: r.draft_data,
-        }));
+        return plainHyphens(
+          rows.map((r) => ({
+            ...r.data,
+            slug: r.slug,
+            visible: r.visible,
+            sortOrder: r.sort_order,
+            draft: r.draft_data,
+          })),
+        );
     } catch (err) {
       console.error("[content] admin DB read failed:", err);
     }
   }
-  return seedProjects.map((p, i) => ({ ...p, visible: true, sortOrder: i }));
+  return plainHyphens(
+    seedProjects.map((p, i) => ({ ...p, visible: true, sortOrder: i })),
+  );
 }
 
 /** True once the DB is reachable and holds seeded content. */

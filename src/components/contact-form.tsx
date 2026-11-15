@@ -19,7 +19,7 @@ export function ContactForm() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
       next.email = "That email doesn't look quite right.";
     if (values.message.trim().length < 12)
-      next.message = "A bit more context helps — at least a sentence.";
+      next.message = "A bit more context helps - at least a sentence.";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -35,7 +35,7 @@ export function ContactForm() {
       setStatus("success");
     } else {
       setStatus("error");
-      setErrors({ message: res.error ?? "Something went wrong — try again." });
+      setErrors({ message: res.error ?? "Something went wrong - try again." });
     }
   }
 
@@ -54,7 +54,7 @@ export function ContactForm() {
           Message received.
         </h2>
         <p className="max-w-sm text-fg-muted">
-          Thanks, {values.name.split(" ")[0] || "friend"} — I&apos;ll get back to
+          Thanks, {values.name.split(" ")[0] || "friend"} - I&apos;ll get back to
           you within two business days.
         </p>
       </motion.div>
@@ -63,7 +63,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-8" noValidate>
-      {/* Honeypot — hidden from real users, bots fill it and get dropped */}
+      {/* Honeypot - hidden from real users, bots fill it and get dropped */}
       <input
         type="text"
         name="company"
@@ -98,7 +98,7 @@ export function ContactForm() {
         value={values.message}
         onChange={(v) => setValues((s) => ({ ...s, message: v }))}
         error={errors.message}
-        placeholder="Tell me a bit about your project — timeline, shape of the problem, and what success looks like."
+        placeholder="Tell me a bit about your project - timeline, shape of the problem, and what success looks like."
       />
 
       <div className="flex flex-wrap items-center gap-4 pt-2">

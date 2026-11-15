@@ -250,7 +250,7 @@ export function ProjectEditor({
       <section className="flex flex-col gap-4 mb-12">
         <h2 className="font-display text-2xl">Live preview window</h2>
         <p className="text-sm text-fg-muted -mt-2">
-          Optional — embeds a browser window at the end of the case study.
+          Optional - embeds a browser window at the end of the case study.
         </p>
         <Field
           name="Live URL"

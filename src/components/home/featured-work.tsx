@@ -30,14 +30,14 @@ function ProjectCard({
       href={`/work/${project.slug}`}
       className="group relative flex flex-col h-full overflow-hidden rounded-3xl border border-border bg-surface transition-colors hover:border-fg"
     >
-      {/* Image / Canvas area — uniform aspect across all cards */}
+      {/* Image / Canvas area - uniform aspect across all cards */}
       <div
         className="relative overflow-hidden aspect-[4/5]"
         style={{
           background: `linear-gradient(135deg, ${project.accent}22 0%, transparent 60%), radial-gradient(circle at 70% 30%, ${project.accent}33, transparent 60%)`,
         }}
       >
-        {/* placeholder art — animated abstract */}
+        {/* placeholder art - animated abstract */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center"
           style={{ y }}
@@ -56,7 +56,7 @@ function ProjectCard({
           />
         </motion.div>
 
-        {/* Meta chip — top right */}
+        {/* Meta chip - top right */}
         <div className="absolute top-5 right-5 flex items-center gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-fg/10 bg-bg/60 backdrop-blur-md text-fg">
             {project.year}
@@ -75,7 +75,7 @@ function ProjectCard({
         </div>
       </div>
 
-      {/* Text area — flex-1 so cards equalise height in each grid row */}
+      {/* Text area - flex-1 so cards equalise height in each grid row */}
       <div className="p-6 md:p-8 flex flex-col flex-1">
         <div className="flex items-center gap-3 mb-3 font-mono text-xs text-fg-subtle">
           <span>{project.client}</span>

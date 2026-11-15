@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-// Loaded but not applied by default — only kicks in when the
+// Loaded but not applied by default - only kicks in when the
 // accessibility widget enables Dyslexia Friendly mode.
 const lexend = Lexend({
   variable: "--font-lexend",

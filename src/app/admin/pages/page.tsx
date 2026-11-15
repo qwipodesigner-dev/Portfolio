@@ -19,7 +19,7 @@ export default async function AdminPagesPage() {
       <AdminTabs active="pages" />
 
       <p className="text-fg-muted text-sm mb-6 max-w-xl text-pretty">
-        Create brand-new pages — landing pages, a speaking page, anything.
+        Create brand-new pages - landing pages, a speaking page, anything.
         They render at <span className="font-mono text-xs">/your-slug</span> with
         the site&apos;s standard design and the same block system as case
         studies, and can optionally appear in the navigation.

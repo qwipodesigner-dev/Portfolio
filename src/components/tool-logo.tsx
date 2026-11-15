@@ -1,6 +1,6 @@
 /**
  * Brand marks for the tools listed in the About stack and service
- * tool lists. Known tools get their real logo (inline SVG — no
+ * tool lists. Known tools get their real logo (inline SVG - no
  * external requests); Adobe apps use Adobe's own two-letter tile
  * branding; anything unrecognised falls back to a tidy monogram
  * tile, so tools added later from the admin still get an icon.

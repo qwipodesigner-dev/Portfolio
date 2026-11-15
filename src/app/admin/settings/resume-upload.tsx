@@ -25,7 +25,7 @@ export function ResumeUpload({ currentUrl }: { currentUrl: string }) {
       <h2 className="font-display text-2xl">Resume</h2>
       <p className="text-sm text-fg-muted text-pretty">
         Upload a new PDF and every &ldquo;Download resume&rdquo; link on the
-        site switches to it instantly — home, about, and footer.
+        site switches to it instantly - home, about, and footer.
       </p>
       <div className="flex items-center gap-3">
         <input
@@ -56,7 +56,7 @@ export function ResumeUpload({ currentUrl }: { currentUrl: string }) {
       </div>
       {status.kind === "done" && (
         <p className="text-sm text-green-600">
-          Resume updated — live everywhere now.
+          Resume updated - live everywhere now.
         </p>
       )}
       {status.kind === "error" && (

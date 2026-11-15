@@ -2,7 +2,7 @@ import { neon } from "@neondatabase/serverless";
 
 /**
  * Lazy Neon client. DATABASE_URL is absent in local dev until
- * `vercel env pull` — callers must handle `null` and fall back
+ * `vercel env pull` - callers must handle `null` and fall back
  * to the static seed content so the public site never breaks.
  */
 export function getDb() {
@@ -15,7 +15,7 @@ export type Sql = NonNullable<ReturnType<typeof getDb>>;
 
 let schemaReady: Promise<void> | null = null;
 
-/** Create tables on first use — idempotent, runs once per server instance. */
+/** Create tables on first use - idempotent, runs once per server instance. */
 export function ensureSchema(sql: Sql) {
   schemaReady ??= (async () => {
     await sql`
@@ -89,7 +89,7 @@ export function ensureSchema(sql: Sql) {
         created_at timestamptz NOT NULL DEFAULT now()
       )`;
     await sql`CREATE INDEX IF NOT EXISTS revisions_kind_ref ON revisions (kind, ref, id DESC)`;
-    // Draft support — pending edits live here until published
+    // Draft support - pending edits live here until published
     await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS draft_data jsonb`;
     await sql`ALTER TABLE services ADD COLUMN IF NOT EXISTS draft_data jsonb`;
     await sql`ALTER TABLE pages ADD COLUMN IF NOT EXISTS draft_data jsonb`;

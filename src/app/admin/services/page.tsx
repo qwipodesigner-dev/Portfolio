@@ -27,7 +27,7 @@ export default async function AdminServicesPage() {
         <div className="mb-8 rounded-2xl border border-accent/40 bg-accent-soft p-6">
           <h2 className="font-medium mb-1">One-time import needed</h2>
           <p className="text-fg-muted text-sm mb-4 text-pretty">
-            Import the six services built into the code — after that
+            Import the six services built into the code - after that
             they&apos;re fully editable here.
           </p>
           <form action={seedServicesAction}>

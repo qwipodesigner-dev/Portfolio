@@ -89,7 +89,7 @@ export function AccessibilityWidget() {
         className="fixed -left-[9999px] top-0 opacity-0 pointer-events-none"
       />
 
-      {/* Launcher button — universal access symbol, bold + clearly recognisable */}
+      {/* Launcher button - universal access symbol, bold + clearly recognisable */}
       <motion.button
         type="button"
         onClick={() => setOpen(!isOpen)}
@@ -153,7 +153,7 @@ export function AccessibilityWidget() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Invisible backdrop — captures outside-clicks to close the panel,
+            {/* Invisible backdrop - captures outside-clicks to close the panel,
                 but stays transparent so the user sees their live preview
                 applied to the page underneath. */}
             <motion.div
@@ -212,16 +212,16 @@ export function AccessibilityWidget() {
                 </button>
               </header>
 
-              {/* Body — data-lenis-prevent stops Lenis smooth-scroll from
+              {/* Body - data-lenis-prevent stops Lenis smooth-scroll from
                   hijacking wheel events here so native scrolling works. */}
               <div
                 className="flex-1 overflow-y-auto overscroll-contain px-4 py-4"
                 data-lenis-prevent
               >
-                {/* Language — full width with inline dropdown, at the top */}
+                {/* Language - full width with inline dropdown, at the top */}
                 <LanguageTile />
 
-                {/* Text size — full width stepper */}
+                {/* Text size - full width stepper */}
                 <div className="mt-2">
                   <Stepper
                     label="Text Size"
@@ -252,7 +252,7 @@ export function AccessibilityWidget() {
                   />
                 </div>
 
-                {/* Saturation — multi-state */}
+                {/* Saturation - multi-state */}
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <FeatureTile
                     label="Saturation"
@@ -322,7 +322,7 @@ export function AccessibilityWidget() {
                   />
                 </div>
 
-                {/* TTS — full width */}
+                {/* TTS - full width */}
                 <div className="mt-2">
                   <FeatureTile
                     label="Read Aloud"
@@ -351,7 +351,7 @@ export function AccessibilityWidget() {
                   <RotateCcw className="h-3.5 w-3.5" />
                   Reset all
                 </button>
-                {/* Quiet admin door — reads as the builder credit */}
+                {/* Quiet admin door - reads as the builder credit */}
                 <Link
                   href="/admin"
                   className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle hover:text-fg transition-colors"
@@ -364,7 +364,7 @@ export function AccessibilityWidget() {
         )}
       </AnimatePresence>
 
-      {/* ADHD reading mask — two overlays around cursor Y */}
+      {/* ADHD reading mask - two overlays around cursor Y */}
       <AnimatePresence>
         {settings.adhdMode && (
           <>
@@ -394,7 +394,7 @@ export function AccessibilityWidget() {
 }
 
 /* ============================================================
-   Keyboard-key chip — used in the header for the ⌘ + / hint
+   Keyboard-key chip - used in the header for the ⌘ + / hint
    ============================================================ */
 
 function Kbd({ children, ...rest }: React.HTMLAttributes<HTMLElement>) {
@@ -409,7 +409,7 @@ function Kbd({ children, ...rest }: React.HTMLAttributes<HTMLElement>) {
 }
 
 /* ============================================================
-   Language tile — full width with inline dropdown
+   Language tile - full width with inline dropdown
    ============================================================ */
 
 function LanguageTile() {

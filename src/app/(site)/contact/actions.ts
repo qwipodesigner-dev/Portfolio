@@ -3,12 +3,12 @@
 import { getDb, ensureSchema } from "@/lib/db";
 
 /**
- * Public contact-form submission — the one server action that runs
+ * Public contact-form submission - the one server action that runs
  * unauthenticated. Validates, rate-limits per instance, and stores
  * the message for the admin Inbox.
  */
 
-// Per-instance token bucket — enough to blunt drive-by spam without
+// Per-instance token bucket - enough to blunt drive-by spam without
 // external services. Serious volume would need a real rate limiter.
 let recent: number[] = [];
 
@@ -16,7 +16,7 @@ export async function submitMessageAction(input: {
   name: string;
   email: string;
   message: string;
-  /** Honeypot — real users never fill this */
+  /** Honeypot - real users never fill this */
   company?: string;
 }): Promise<{ ok: boolean; error?: string }> {
   const name = String(input.name ?? "").trim().slice(0, 200);
@@ -32,7 +32,7 @@ export async function submitMessageAction(input: {
   const now = Date.now();
   recent = recent.filter((t) => now - t < 60_000);
   if (recent.length >= 5)
-    return { ok: false, error: "Too many messages — try again in a minute." };
+    return { ok: false, error: "Too many messages - try again in a minute." };
   recent.push(now);
 
   const sql = getDb();
@@ -46,6 +46,6 @@ export async function submitMessageAction(input: {
     return { ok: true };
   } catch (err) {
     console.error("[contact] failed to store message:", err);
-    return { ok: false, error: "Something went wrong — please email me directly." };
+    return { ok: false, error: "Something went wrong - please email me directly." };
   }
 }

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Minimal admin chrome — deliberately separate from the public site's
+ * Minimal admin chrome - deliberately separate from the public site's
  * header/footer/lenis stack so editing never disturbs the live design.
  * Auth is enforced per-page and per-action, not here.
  */

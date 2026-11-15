@@ -48,7 +48,7 @@ export function Field({
 }
 
 /* ------------------------------------------------------------------ */
-/* AutoForm — renders an editor for any JSON content shape, driven by  */
+/* AutoForm - renders an editor for any JSON content shape, driven by  */
 /* the default value's structure. Strings → inputs/textareas,          */
 /* string[] → line-separated textarea, object[] → repeatable cards,    */
 /* nested objects → fieldsets. Future content types need no new UI.    */
@@ -229,7 +229,7 @@ export function AutoForm({
 }
 
 /* ------------------------------------------------------------------ */
-/* SectionsEditor — block-based sections (text/image/video/embed),     */
+/* SectionsEditor - block-based sections (text/image/video/embed),     */
 /* shared by the project editor and the custom-page editor.            */
 /* ------------------------------------------------------------------ */
 
@@ -469,7 +469,7 @@ function SectionCard({
 }
 
 /* ------------------------------------------------------------------ */
-/* AdminTabs — shared header nav across admin pages                    */
+/* AdminTabs - shared header nav across admin pages                    */
 /* ------------------------------------------------------------------ */
 
 export function AdminTabs({ active }: { active: string }) {

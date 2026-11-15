@@ -13,11 +13,11 @@ export function CustomCursor() {
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
 
-  // Inner dot — fast follow
+  // Inner dot - fast follow
   const dotX = useSpring(x, { damping: 30, stiffness: 500, mass: 0.3 });
   const dotY = useSpring(y, { damping: 30, stiffness: 500, mass: 0.3 });
 
-  // Outer ring — lags behind for trail effect
+  // Outer ring - lags behind for trail effect
   const ringX = useSpring(x, { damping: 22, stiffness: 180, mass: 0.7 });
   const ringY = useSpring(y, { damping: 22, stiffness: 180, mass: 0.7 });
 
@@ -64,7 +64,7 @@ export function CustomCursor() {
 
   return (
     <>
-      {/* Inner dot — accent color */}
+      {/* Inner dot - accent color */}
       <motion.div
         className="pointer-events-none fixed top-0 left-0 z-[100] hidden md:block"
         style={{ x: dotX, y: dotY }}
@@ -81,7 +81,7 @@ export function CustomCursor() {
         />
       </motion.div>
 
-      {/* Outer ring — lags behind, mix-blend-difference for any-color visibility */}
+      {/* Outer ring - lags behind, mix-blend-difference for any-color visibility */}
       <motion.div
         className="pointer-events-none fixed top-0 left-0 z-[100] hidden md:block mix-blend-difference"
         style={{ x: ringX, y: ringY }}

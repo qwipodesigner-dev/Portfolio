@@ -40,7 +40,7 @@ export function PageList({ pages }: { pages: ManagedPage[] }) {
       {items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
           <p className="text-fg-muted">
-            No custom pages yet — create your first one.
+            No custom pages yet - create your first one.
           </p>
         </div>
       ) : (

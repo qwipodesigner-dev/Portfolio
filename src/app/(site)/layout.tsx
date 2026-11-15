@@ -5,7 +5,7 @@ import { getSiteContent } from "@/lib/site";
 import { getNavPages } from "@/lib/pages-data";
 
 /**
- * Public site chrome — nav, footer, lenis/theme/a11y providers.
+ * Public site chrome - nav, footer, lenis/theme/a11y providers.
  * Lives in a route group so the /admin portal renders outside it
  * and can never disturb the live site's look.
  */

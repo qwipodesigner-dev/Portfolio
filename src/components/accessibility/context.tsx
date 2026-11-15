@@ -18,7 +18,7 @@ export type Language = {
   native: string;
 };
 
-/** Curated language list — English default + Indian regional + global majors. */
+/** Curated language list - English default + Indian regional + global majors. */
 export const LANGUAGES: Language[] = [
   { code: "en", name: "English", native: "English" },
   { code: "hi", name: "Hindi", native: "हिन्दी" },
@@ -116,7 +116,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
         setSettings({ ...DEFAULT_SETTINGS, ...parsed });
       }
     } catch {
-      /* swallow — corrupted storage shouldn't break the page */
+      /* swallow - corrupted storage shouldn't break the page */
     }
     // If we just reloaded as part of an English-restore action, re-open
     // the panel so the user lands back where they were.
@@ -137,7 +137,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     } catch {
-      /* storage full or blocked — silently ignore */
+      /* storage full or blocked - silently ignore */
     }
   }, [settings, hydrated]);
 
@@ -195,7 +195,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("mousemove", onMove);
   }, [settings.adhdMode]);
 
-  // Google Translate Element loader — load once on mount
+  // Google Translate Element loader - load once on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -234,7 +234,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     script.async = true;
     script.setAttribute("data-a11y", "ignore");
     document.body.appendChild(script);
-    // Don't remove on cleanup — keep the script across re-renders
+    // Don't remove on cleanup - keep the script across re-renders
   }, []);
 
   // Sync settings.language with Google Translate's hidden <select>
@@ -282,7 +282,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
 
     if (apply()) return;
 
-    // Google's select is injected async — poll briefly until it shows up
+    // Google's select is injected async - poll briefly until it shows up
     let tries = 0;
     const interval = window.setInterval(() => {
       tries++;

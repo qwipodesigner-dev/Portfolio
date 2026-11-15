@@ -36,7 +36,7 @@ export default async function HistoryPage({
         History · {ref}
       </h1>
       <p className="text-fg-muted text-sm mb-10">
-        Every publish keeps a snapshot of what it replaced — the last 20 are
+        Every publish keeps a snapshot of what it replaced - the last 20 are
         kept. Restoring is itself undoable.
       </p>
       <RevisionList revisions={revisions} />

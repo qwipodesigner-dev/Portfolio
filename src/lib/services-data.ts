@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { getDb, ensureSchema } from "./db";
+import { plainHyphens } from "./normalize";
 import { services as seedServices, type Service } from "./services";
 
 export const SERVICES_TAG = "services";
@@ -41,8 +42,10 @@ async function fetchAllFromDb(): Promise<ManagedService[] | null> {
 const getAllCached = unstable_cache(
   async (): Promise<ManagedService[]> => {
     const fromDb = await fetchAllFromDb();
-    if (fromDb) return fromDb;
-    return seedServices.map((s, i) => ({ ...s, visible: true, sortOrder: i }));
+    if (fromDb) return plainHyphens(fromDb);
+    return plainHyphens(
+      seedServices.map((s, i) => ({ ...s, visible: true, sortOrder: i })),
+    );
   },
   ["all-services"],
   { tags: [SERVICES_TAG] },
@@ -60,8 +63,10 @@ export async function getServiceBySlug(
 
 export async function getAllServicesAdmin(): Promise<ManagedService[]> {
   const fromDb = await fetchAllFromDb();
-  if (fromDb) return fromDb;
-  return seedServices.map((s, i) => ({ ...s, visible: true, sortOrder: i }));
+  if (fromDb) return plainHyphens(fromDb);
+  return plainHyphens(
+    seedServices.map((s, i) => ({ ...s, visible: true, sortOrder: i })),
+  );
 }
 
 export async function isServicesDbLive(): Promise<boolean> {

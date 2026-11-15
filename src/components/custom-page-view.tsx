@@ -3,7 +3,7 @@ import { Reveal } from "./reveal";
 import { CaseSections } from "./case-sections";
 import type { CustomPage } from "@/lib/pages-data";
 
-/** Shared renderer for admin-created custom pages — used by the public
+/** Shared renderer for admin-created custom pages - used by the public
  *  /[slug] route and the admin draft-preview route. */
 export function CustomPageView({ page }: { page: CustomPage }) {
   return (

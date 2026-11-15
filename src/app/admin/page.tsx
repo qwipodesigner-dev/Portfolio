@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
           <h2 className="font-medium mb-1">One-time import needed</h2>
           <p className="text-fg-muted text-sm mb-4 text-pretty">
             Your live site is currently serving the content built into the
-            code. Import it into the database once — after that, everything
+            code. Import it into the database once - after that, everything
             you edit here goes live instantly.
           </p>
           <form action={seedAction}>

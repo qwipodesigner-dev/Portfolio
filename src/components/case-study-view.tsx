@@ -6,7 +6,7 @@ import { CaseSections } from "./case-sections";
 import type { Project } from "@/lib/projects";
 
 /**
- * The full case-study body — cover, meta grid, hero art, sections,
+ * The full case-study body - cover, meta grid, hero art, sections,
  * reflection, live embed, walkthrough CTA. Shared between the public
  * /work/[slug] page and the admin draft-preview route so previews are
  * pixel-identical to the real thing.
@@ -94,7 +94,7 @@ export function CaseStudyView({ project }: { project: Project }) {
         </Container>
       </section>
 
-      {/* Body — real case study content */}
+      {/* Body - real case study content */}
       <section className="py-24 md:py-32">
         <Container size="sm">
           <CaseSections sections={project.sections} />
@@ -120,7 +120,7 @@ export function CaseStudyView({ project }: { project: Project }) {
               heading={project.liveHeading ?? "See it in production."}
               caption={
                 project.liveCaption ??
-                "The live app rendered at desktop dimensions — try the flows, poke at the screens. Open in a new tab for full-screen interaction."
+                "The live app rendered at desktop dimensions - try the flows, poke at the screens. Open in a new tab for full-screen interaction."
               }
             />
           </Container>
@@ -130,7 +130,7 @@ export function CaseStudyView({ project }: { project: Project }) {
           <Reveal delay={0.5}>
             <div className="pt-10 border-t border-border flex flex-wrap items-center justify-between gap-6">
               <p className="font-mono text-xs uppercase tracking-[0.22em] text-fg-subtle max-w-md">
-                Want a walkthrough with real screens and metrics? Reach out — I&apos;m
+                Want a walkthrough with real screens and metrics? Reach out - I&apos;m
                 happy to share more under a short call.
               </p>
               <a

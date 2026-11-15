@@ -5,7 +5,7 @@ import { getPageBySlug, getVisiblePages } from "@/lib/pages-data";
 
 type Params = { slug: string };
 
-// Custom pages are created at runtime from the admin — render on demand.
+// Custom pages are created at runtime from the admin - render on demand.
 export const dynamicParams = true;
 
 export async function generateStaticParams(): Promise<Params[]> {

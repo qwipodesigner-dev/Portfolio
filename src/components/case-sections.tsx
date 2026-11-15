@@ -2,7 +2,7 @@ import { Reveal } from "./reveal";
 import type { CaseStudySection } from "@/lib/projects";
 
 /**
- * Shared renderer for block-based content sections — used by case
+ * Shared renderer for block-based content sections - used by case
  * studies and admin-created custom pages so both follow the same
  * design language. Text sections render exactly as the original
  * case-study markup; media blocks are figures.

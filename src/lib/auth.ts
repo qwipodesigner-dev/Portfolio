@@ -30,7 +30,7 @@ export async function adminExists(): Promise<boolean> {
   return rows[0].n > 0;
 }
 
-/** First-time setup — only works while no admin account exists. */
+/** First-time setup - only works while no admin account exists. */
 export async function createAdmin(email: string, password: string) {
   const sql = await db();
   if (await adminExists()) throw new Error("Admin account already exists");
@@ -56,7 +56,7 @@ export async function verifyCredentials(
   const rows = (await sql`
     SELECT password_hash FROM admin_users WHERE email = ${email.toLowerCase().trim()}
   `) as { password_hash: string }[];
-  // Hash against a dummy when the email is unknown — keeps timing uniform
+  // Hash against a dummy when the email is unknown - keeps timing uniform
   const hash =
     rows[0]?.password_hash ??
     "$2a$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinv";
@@ -129,7 +129,7 @@ export async function isAdmin(): Promise<boolean> {
   }
 }
 
-/** Guard for admin server actions — throws if not authenticated. */
+/** Guard for admin server actions - throws if not authenticated. */
 export async function requireAdmin() {
   if (!(await isAdmin())) throw new Error("Unauthorized");
 }

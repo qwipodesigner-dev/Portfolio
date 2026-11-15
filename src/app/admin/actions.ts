@@ -24,7 +24,7 @@ import type { Service } from "@/lib/services";
 
 export type FormState = { error?: string } | undefined;
 
-/** Blow away every cached read of project content — edits go live instantly. */
+/** Blow away every cached read of project content - edits go live instantly. */
 function publish(slug?: string) {
   revalidateTag(PROJECTS_TAG, "max");
   revalidatePath("/");
@@ -46,7 +46,7 @@ export async function setupAction(
     return { error: "Password must be at least 10 characters." };
   if (password !== confirm) return { error: "Passwords don't match." };
   if (await adminExists())
-    return { error: "Admin account already exists — log in instead." };
+    return { error: "Admin account already exists - log in instead." };
   await createAdmin(email, password);
   await createSession();
   redirect("/admin");
@@ -188,7 +188,7 @@ export async function restoreRevisionAction(
           ? ((await sql`SELECT data FROM services WHERE slug = ${rev.ref}`) as { data: unknown }[])
           : ((await sql`SELECT data FROM pages WHERE slug = ${rev.ref}`) as { data: unknown }[]);
     if (current.length === 0)
-      return { error: `The ${kind} "${rev.ref}" no longer exists — restore isn't possible.` };
+      return { error: `The ${kind} "${rev.ref}" no longer exists - restore isn't possible.` };
     await snapshot(sql, kind, rev.ref, current[0].data);
     if (kind === "project") {
       await sql`UPDATE projects SET data = ${json}::jsonb, updated_at = now() WHERE slug = ${rev.ref}`;
@@ -241,7 +241,7 @@ export async function reorderAction(slugs: string[]) {
 function publishSite() {
   revalidateTag(SITE_TAG, "max");
   revalidatePath("/", "layout"); // nav/footer render on every page
-  // Metadata routes cache their output separately from pages — without
+  // Metadata routes cache their output separately from pages - without
   // these, a Site Url change leaves sitemap/robots on the old domain.
   revalidatePath("/sitemap.xml");
   revalidatePath("/robots.txt");
@@ -373,7 +373,7 @@ export async function savePageAction(
   const nextSlug = page.slug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-");
   if (!nextSlug) return { error: "Slug can't be empty." };
   if (RESERVED_SLUGS.has(nextSlug))
-    return { error: `"/${nextSlug}" is a built-in route — pick another slug.` };
+    return { error: `"/${nextSlug}" is a built-in route - pick another slug.` };
   page.slug = nextSlug;
   try {
     if (slug === "__new__") {
@@ -464,7 +464,7 @@ export async function uploadResumeAction(
     publishSite();
     return { url: blob.url };
   } catch {
-    return { error: "Upload failed — is the Blob store connected?" };
+    return { error: "Upload failed - is the Blob store connected?" };
   }
 }
 
@@ -489,7 +489,7 @@ export async function uploadImageAction(
     return {
       error:
         e instanceof Error && e.message.includes("token")
-          ? "Blob store not connected — link portfolio-media to the project in Vercel."
+          ? "Blob store not connected - link portfolio-media to the project in Vercel."
           : "Upload failed.",
     };
   }

@@ -1,8 +1,9 @@
 import { unstable_cache } from "next/cache";
 import { getDb, ensureSchema } from "./db";
+import { plainHyphens } from "./normalize";
 
 /* ------------------------------------------------------------------ */
-/* Types — one shape per editable surface                              */
+/* Types - one shape per editable surface                              */
 /* ------------------------------------------------------------------ */
 
 export type LinkItem = { label: string; href: string };
@@ -117,14 +118,14 @@ export type FooterContent = {
 };
 
 export type SiteSettings = {
-  /** Where every "Download resume" link points — updated via admin upload */
+  /** Where every "Download resume" link points - updated via admin upload */
   resumeUrl: string;
 };
 
 export type SeoContent = {
   /** Base site title (browser tab, search results) */
   siteTitle: string;
-  /** Template for inner pages — %s is replaced by the page title */
+  /** Template for inner pages - %s is replaced by the page title */
   titleTemplate: string;
   description: string;
   keywords: string[];
@@ -149,7 +150,7 @@ export type ServicesPageContent = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Defaults — extracted verbatim from the shipped components.          */
+/* Defaults - extracted verbatim from the shipped components.          */
 /* The live site renders these until the DB row overrides them, so     */
 /* appearance never changes as a side-effect of adding the CMS.        */
 /* ------------------------------------------------------------------ */
@@ -172,10 +173,10 @@ export const siteDefaults = {
       eyebrow: "Services · What I do",
       title: "Six ways I help teams ship better products.",
       description:
-        "I take ownership end-to-end — from the messy problem statement to the handoff engineering can actually build from. Click any service for the process, deliverables, methods, and tools.",
+        "I take ownership end-to-end - from the messy problem statement to the handoff engineering can actually build from. Click any service for the process, deliverables, methods, and tools.",
     },
     workHeader: {
-      eyebrow: "Selected work · 2021 — Now",
+      eyebrow: "Selected work · 2021 - Now",
       title: "Systems that ship, interfaces that scale.",
       description:
         "A few recent projects across healthcare, B2B commerce, and enterprise design systems.",
@@ -185,8 +186,8 @@ export const siteDefaults = {
       heading: "I treat interfaces as",
       headingEmphasis: "conversations.",
       paragraphs: [
-        "I started as a 2D animator — then fell into product design and never left. Over six years I've designed 40+ products for hospitals, SaaS platforms, and commerce marketplaces. The lesson that stuck: the space between two states is where a product earns its personality.",
-        "Today I'm at Qwipo, leading design on seller and logistics workflows. Before that, two years at Achala IT shipping healthcare UX for AIG, KIMS, Continental, Nephroplus, Kamineni, and Aster Hospitals — under ABHA and WCAG constraints that made the craft tighter.",
+        "I started as a 2D animator - then fell into product design and never left. Over six years I've designed 40+ products for hospitals, SaaS platforms, and commerce marketplaces. The lesson that stuck: the space between two states is where a product earns its personality.",
+        "Today I'm at Qwipo, leading design on seller and logistics workflows. Before that, two years at Achala IT shipping healthcare UX for AIG, KIMS, Continental, Nephroplus, Kamineni, and Aster Hospitals - under ABHA and WCAG constraints that made the craft tighter.",
       ],
       portraitName: "Vikas M.",
       portraitLocation: "Hyderabad, IN",
@@ -211,13 +212,13 @@ export const siteDefaults = {
     portraitName: "Vikas.",
     portraitMeta: "Hyderabad, India · 2026",
     paragraphs: [
-      "I'm Vikas — a Senior Product Designer based in Hyderabad with six years of experience designing complex B2B, healthcare, and logistics products.",
-      "I'm currently at Qwipo, where I lead end-to-end design for seller and logistics applications: onboarding, inventory, pricing systems — the kind of workflows where every extra click costs a real business real money. Before this, two years at Achala IT Solutions designing 40+ healthcare applications for AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster — work governed by ABHA and WCAG compliance, where getting design wrong has consequences beyond bounce rate.",
+      "I'm Vikas - a Senior Product Designer based in Hyderabad with six years of experience designing complex B2B, healthcare, and logistics products.",
+      "I'm currently at Qwipo, where I lead end-to-end design for seller and logistics applications: onboarding, inventory, pricing systems - the kind of workflows where every extra click costs a real business real money. Before this, two years at Achala IT Solutions designing 40+ healthcare applications for AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster - work governed by ABHA and WCAG compliance, where getting design wrong has consequences beyond bounce rate.",
       "I didn't start in product design. I have a Bachelor of Fine Arts in Animation from JNAFAU, and my first job was as a 2D animator on a Cartoon Network series at Cosmos Maya. That origin still shapes how I work: I treat interfaces as sequences, I care about timing, and I believe the space between two states is where a product earns its personality.",
       "What I care about now: design systems that scale past their first release, research that reaches the engineers who build the thing, and the slow, unfashionable work of making business software feel humane.",
     ],
     hobbiesLine:
-      "Outside of work — long travel, photography, cooking, and mural painting.",
+      "Outside of work - long travel, photography, cooking, and mural painting.",
     valuesEyebrow: "How I work",
     valuesHeading: "Three things I keep coming back to.",
     values: [
@@ -240,23 +241,23 @@ export const siteDefaults = {
       {
         role: "Senior Product Designer",
         company: "Qwipo",
-        period: "Dec 2025 — Present",
+        period: "Dec 2025 - Present",
         location: "Hybrid · Hyderabad",
         highlight:
-          "B2B/B2C logistics and seller applications — onboarding, inventory, order management, and pricing systems.",
+          "B2B/B2C logistics and seller applications - onboarding, inventory, order management, and pricing systems.",
       },
       {
         role: "Senior Product Designer",
         company: "Achala IT Solutions",
-        period: "Dec 2023 — Oct 2025",
+        period: "Dec 2023 - Oct 2025",
         location: "Hyderabad",
         highlight:
-          "40+ healthcare and enterprise applications for AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster Hospitals — ABHA and WCAG compliant.",
+          "40+ healthcare and enterprise applications for AIG, KIMS, Kamineni, Continental, Nephroplus, and Aster Hospitals - ABHA and WCAG compliant.",
       },
       {
         role: "UI/UX & Brand Designer",
         company: "Flytta Innovations",
-        period: "Aug 2021 — Nov 2023",
+        period: "Aug 2021 - Nov 2023",
         location: "Hyderabad",
         highlight:
           "Led brand + product design across digital platforms. Mentored juniors and established design guidelines.",
@@ -264,18 +265,18 @@ export const siteDefaults = {
       {
         role: "Visual Designer",
         company: "Granddad Communications",
-        period: "Jun 2020 — Aug 2021",
+        period: "Jun 2020 - Aug 2021",
         location: "Hyderabad",
         highlight:
           "Brand identity, environmental branding, and animated social content.",
       },
       {
-        role: "2D Animator — Intern",
+        role: "2D Animator - Intern",
         company: "Cosmos Maya",
-        period: "Mar 2020 — Jun 2020",
+        period: "Mar 2020 - Jun 2020",
         location: "Hyderabad",
         highlight:
-          "Worked on multiple episodes of a Cartoon Network animated series — timing, spacing, character motion.",
+          "Worked on multiple episodes of a Cartoon Network animated series - timing, spacing, character motion.",
       },
     ],
     stackEyebrow: "Stack",
@@ -296,7 +297,7 @@ export const siteDefaults = {
     heading: "Let's make something",
     headingEmphasis: "good.",
     blurb:
-      "Tell me a bit about what you're working on — timeline, shape of the problem, and what success looks like. I read every message and typically respond within two business days.",
+      "Tell me a bit about what you're working on - timeline, shape of the problem, and what success looks like. I read every message and typically respond within two business days.",
     email: "vikasmittapalli@gmail.com",
     phone: "+91 97034 79995",
     socials: [
@@ -344,7 +345,7 @@ export const siteDefaults = {
   } satisfies SiteSettings,
 
   seo: {
-    siteTitle: "Vikas Mittapalli — Senior Product Designer",
+    siteTitle: "Vikas Mittapalli - Senior Product Designer",
     titleTemplate: "%s · Vikas Mittapalli",
     description:
       "Senior Product Designer with 6+ years of experience crafting scalable B2B, healthcare, and logistics products. Currently at Qwipo, previously AIG, KIMS, Continental, and Aster Hospitals.",
@@ -362,11 +363,11 @@ export const siteDefaults = {
   } satisfies SeoContent,
 
   workPage: {
-    eyebrow: "Work · 2021 — Now",
+    eyebrow: "Work · 2021 - Now",
     heading: "A working archive of",
     headingEmphasis: "what I've shipped.",
     blurb:
-      "Selected projects spanning healthcare, B2B commerce, and design systems. Each case study walks through context, process, and what shipped — with the honest bits still attached.",
+      "Selected projects spanning healthcare, B2B commerce, and design systems. Each case study walks through context, process, and what shipped - with the honest bits still attached.",
     footerNote: "More on the way · Case studies for Qwipo and Flytta coming soon",
   } satisfies WorkPageContent,
 
@@ -375,7 +376,7 @@ export const siteDefaults = {
     heading: "Six ways I help teams ship",
     headingEmphasis: "better products.",
     blurb:
-      "I take ownership end-to-end — from the messy problem statement to the handoff that engineers can actually build from. Click any of the six below for an honest walk-through of how I run that part of the work, what ships at the end, and the methods, frameworks, and tools I reach for.",
+      "I take ownership end-to-end - from the messy problem statement to the handoff that engineers can actually build from. Click any of the six below for an honest walk-through of how I run that part of the work, what ships at the end, and the methods, frameworks, and tools I reach for.",
   } satisfies ServicesPageContent,
 };
 
@@ -383,7 +384,7 @@ export type SiteContentKey = keyof typeof siteDefaults;
 export const SITE_TAG = "site";
 
 /* ------------------------------------------------------------------ */
-/* Reads — DB row wins over default, deep-merged per top-level field   */
+/* Reads - DB row wins over default, deep-merged per top-level field   */
 /* so newly added fields fall back gracefully.                         */
 /* ------------------------------------------------------------------ */
 
@@ -432,7 +433,7 @@ export async function getSiteContent<K extends SiteContentKey>(
   key: K,
 ): Promise<(typeof siteDefaults)[K]> {
   const all = await getAllSiteContent();
-  return merge(siteDefaults[key], all[key]);
+  return plainHyphens(merge(siteDefaults[key], all[key]));
 }
 
 /** Uncached variant for the admin editors. */
@@ -446,8 +447,8 @@ export async function getSiteContentAdmin<K extends SiteContentKey>(
     const rows = (await sql`
       SELECT data FROM site_content WHERE key = ${key}
     `) as { data: unknown }[];
-    return merge(siteDefaults[key], rows[0]?.data);
+    return plainHyphens(merge(siteDefaults[key], rows[0]?.data));
   } catch {
-    return siteDefaults[key];
+    return plainHyphens(siteDefaults[key]);
   }
 }

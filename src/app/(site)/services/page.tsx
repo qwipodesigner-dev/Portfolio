@@ -8,7 +8,7 @@ import { getSiteContent } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Six ways I help product teams ship better software — discovery, architecture, UI, design systems, prototyping, and design-to-code collaboration.",
+    "Six ways I help product teams ship better software - discovery, architecture, UI, design systems, prototyping, and design-to-code collaboration.",
 };
 
 export default async function ServicesIndexPage() {

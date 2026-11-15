@@ -1,10 +1,11 @@
 import { unstable_cache } from "next/cache";
 import { getDb, ensureSchema } from "./db";
+import { plainHyphens } from "./normalize";
 import type { CaseStudySection } from "./projects";
 
 export const PAGES_TAG = "pages";
 
-/** A custom page created from the admin — rendered at /<slug> with the
+/** A custom page created from the admin - rendered at /<slug> with the
  *  site's standard hero + block sections, matching the design system. */
 export type CustomPage = {
   slug: string;
@@ -48,14 +49,16 @@ async function fetchAll(withDrafts = false): Promise<ManagedPage[]> {
             SELECT slug, data, visible, show_in_nav, sort_order
             FROM pages ORDER BY sort_order ASC, id ASC`
     ) as PageRow[];
-    return rows.map((r) => ({
-      ...r.data,
-      slug: r.slug,
-      visible: r.visible,
-      showInNav: r.show_in_nav,
-      sortOrder: r.sort_order,
-      draft: r.draft_data ?? null,
-    }));
+    return plainHyphens(
+      rows.map((r) => ({
+        ...r.data,
+        slug: r.slug,
+        visible: r.visible,
+        showInNav: r.show_in_nav,
+        sortOrder: r.sort_order,
+        draft: r.draft_data ?? null,
+      })),
+    );
   } catch (err) {
     console.error("[pages] DB read failed:", err);
     return [];

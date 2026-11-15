@@ -1,5 +1,5 @@
 /**
- * Concept illustrations for the six service detail pages — bespoke
+ * Concept illustrations for the six service detail pages - bespoke
  * SVG diagrams drawn with the site's design tokens so they read as
  * part of the system in both themes. Three variants per service:
  * "concept" (hero), "process", and "artefacts".
@@ -137,9 +137,9 @@ function Arrow({ d, id }: { d: string; id: string }) {
 
 function DiscoveryConcept() {
   const notes = [
-    // cluster 1 — interviews
+    // cluster 1 - interviews
     [70, 110, 0], [122, 96, -4], [96, 158, 3], [150, 148, -2],
-    // cluster 2 — signals
+    // cluster 2 - signals
     [320, 90, 2], [372, 104, -3], [340, 152, 4],
   ] as const;
   return (
