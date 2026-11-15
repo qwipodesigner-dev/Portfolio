@@ -241,6 +241,10 @@ export async function reorderAction(slugs: string[]) {
 function publishSite() {
   revalidateTag(SITE_TAG, "max");
   revalidatePath("/", "layout"); // nav/footer render on every page
+  // Metadata routes cache their output separately from pages — without
+  // these, a Site Url change leaves sitemap/robots on the old domain.
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/robots.txt");
 }
 
 export async function saveSiteContentAction(
