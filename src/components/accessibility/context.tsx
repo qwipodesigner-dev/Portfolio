@@ -249,19 +249,22 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
         document.querySelector<HTMLSelectElement>(".goog-te-combo");
       if (!select) return false;
 
-      // Restoring English: Google Translate Element can't cleanly undo an
-      // in-place translation via the select alone. Clear its cookies and
-      // reload so the page reflows as the original English content.
+      // Restoring English. Preferred path: Google's own in-place
+      // "Show original" button (inside its same-origin banner iframe)
+      // restores the page seamlessly - no reload, panel stays open,
+      // and Google clears its own cookies. Fallback path: clear the
+      // googtrans cookie at every scope and reload.
       if (settings.language === "en") {
         const current = select.value;
         const isTranslated = !!current && current !== "" && current !== "en";
-        if (isTranslated) {
-          // Google sets googtrans at several scopes: host-only AND the
-          // registrable domain (e.g. .vikasmittapalli.space). A survivor at
-          // any scope re-translates the page after reload, so expire it at
-          // every ancestor scope the browser will let us touch. (On
-          // *.vercel.app the parent scope is a public suffix and never
-          // existed - this only bites on custom domains.)
+
+        // Google sets googtrans at several scopes: host-only AND the
+        // registrable domain (e.g. .vikasmittapalli.space). A survivor at
+        // any scope re-translates the page after reload, so expire it at
+        // every ancestor scope the browser will let us touch. (On
+        // *.vercel.app the parent scope is a public suffix and never
+        // existed - this only bites on custom domains.)
+        const clearCookies = () => {
           const expiry = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
           const parts = window.location.hostname.split(".");
           const scopes = [""]; // host-only cookie (no domain attribute)
@@ -272,8 +275,12 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
           for (const scope of scopes) {
             document.cookie = `googtrans=; path=/; ${scope}${expiry}`;
           }
-          // Loop guard: if some scope still survives, never reload more
-          // than twice per session - a stale language beats a reload loop.
+        };
+
+        // Loop guard: never reload more than twice per session - a stale
+        // language beats a reload loop.
+        const hardRestore = () => {
+          clearCookies();
           let reloads = 0;
           try {
             reloads = Number(sessionStorage.getItem(RELOAD_GUARD) ?? "0");
@@ -290,6 +297,47 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
               /* ignore */
             }
             window.location.reload();
+          }
+        };
+
+        if (isTranslated) {
+          let clickedRestore = false;
+          try {
+            for (const frame of Array.from(
+              document.querySelectorAll<HTMLIFrameElement>(
+                "iframe.skiptranslate",
+              ),
+            )) {
+              const restoreBtn = frame.contentDocument?.querySelector<
+                HTMLButtonElement
+              >("button[id$='.restore']");
+              if (restoreBtn) {
+                restoreBtn.click();
+                clickedRestore = true;
+                break;
+              }
+            }
+          } catch {
+            /* cross-origin or markup change - use the fallback */
+          }
+
+          if (clickedRestore) {
+            // Verify the in-place restore actually landed; if the page is
+            // still translated after a beat, fall back to the reload.
+            window.setTimeout(() => {
+              const stillTranslated =
+                document.documentElement.classList.contains(
+                  "translated-ltr",
+                ) ||
+                document.documentElement.classList.contains("translated-rtl");
+              if (stillTranslated) {
+                hardRestore();
+              } else {
+                clearCookies();
+              }
+            }, 1200);
+          } else {
+            hardRestore();
           }
         } else {
           // English confirmed on screen - reset the guard for next time.
