@@ -76,6 +76,7 @@ export const DEFAULT_SETTINGS: AccessibilitySettings = {
 const STORAGE_KEY = "vm-a11y-settings";
 const REOPEN_FLAG = "vm-a11y-panel-reopen";
 const RELOAD_GUARD = "vm-a11y-lang-reloads";
+const MOBILE_FALLBACK = "vm-a11y-lang-fallback";
 
 type Ctx = {
   settings: AccessibilitySettings;
@@ -301,11 +302,29 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
         return true;
       }
 
-      // Switching between non-English languages: native select-driven change
-      // is enough, no reload needed.
+      // Switching to a non-English language: dispatch through Google's
+      // hidden select. On desktop this translates in place; on mobile
+      // user agents Google often sets its cookie but skips the in-place
+      // pass, so verify the DOM actually translated and reload once as
+      // a fallback - the load path translates reliably from the cookie.
       if (select.value !== settings.language) {
         select.value = settings.language;
         select.dispatchEvent(new Event("change"));
+        const lang = settings.language;
+        window.setTimeout(() => {
+          const translated =
+            document.documentElement.classList.contains("translated-ltr") ||
+            document.documentElement.classList.contains("translated-rtl");
+          let alreadyTried = false;
+          try {
+            alreadyTried = sessionStorage.getItem(MOBILE_FALLBACK) === lang;
+            if (!translated && !alreadyTried)
+              sessionStorage.setItem(MOBILE_FALLBACK, lang);
+          } catch {
+            /* ignore */
+          }
+          if (!translated && !alreadyTried) window.location.reload();
+        }, 2500);
       }
       return true;
     };
