@@ -6,6 +6,7 @@ import { put } from "@vercel/blob";
 import {
   adminExists,
   changePassword,
+  clientIpHash,
   createAdmin,
   createSession,
   destroySession,
@@ -29,6 +30,7 @@ function publish(slug?: string) {
   revalidateTag(PROJECTS_TAG, "max");
   revalidatePath("/");
   revalidatePath("/work");
+  revalidatePath("/sitemap.xml");
   if (slug) revalidatePath(`/work/${slug}`);
 }
 
@@ -47,7 +49,15 @@ export async function setupAction(
   if (password !== confirm) return { error: "Passwords don't match." };
   if (await adminExists())
     return { error: "Admin account already exists - log in instead." };
-  await createAdmin(email, password);
+  try {
+    await createAdmin(
+      email,
+      password,
+      String(formData.get("setupToken") ?? "") || undefined,
+    );
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Setup failed." };
+  }
   await createSession();
   redirect("/admin");
 }
@@ -56,11 +66,12 @@ export async function loginAction(
   _prev: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  if (await isRateLimited())
+  const ipHash = await clientIpHash();
+  if (await isRateLimited(ipHash))
     return { error: "Too many failed attempts. Try again in 15 minutes." };
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
-  const ok = await verifyCredentials(email, password);
+  const ok = await verifyCredentials(email, password, ipHash);
   if (!ok) return { error: "Wrong email or password." };
   await createSession();
   redirect("/admin");
@@ -129,11 +140,15 @@ export async function saveProjectAction(
         VALUES (${nextSlug}, ${JSON.stringify(project)}::jsonb, ${visible}, ${max[0].m + 1})
       `;
     } else if (mode === "draft") {
+      // Visibility is live state, not draft content - the editor promises
+      // "off = hidden everywhere", so honor the toggle on draft saves too.
       const rows = (await sql`
-        UPDATE projects SET draft_data = ${JSON.stringify(project)}::jsonb, updated_at = now()
+        UPDATE projects SET draft_data = ${JSON.stringify(project)}::jsonb,
+            visible = ${visible}, updated_at = now()
         WHERE slug = ${slug} RETURNING slug
       `) as unknown[];
       if (rows.length === 0) return { error: `Project "${slug}" not found.` };
+      publish(slug);
       return { slug };
     } else {
       const current = (await sql`SELECT data FROM projects WHERE slug = ${slug}`) as { data: unknown }[];
@@ -145,6 +160,9 @@ export async function saveProjectAction(
             visible = ${visible}, draft_data = NULL, updated_at = now()
         WHERE slug = ${slug}
       `;
+      // Keep revision history attached across slug renames.
+      if (nextSlug !== slug)
+        await sql`UPDATE revisions SET ref = ${nextSlug} WHERE kind = 'project' AND ref = ${slug}`;
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Save failed.";
@@ -223,6 +241,8 @@ export async function deleteProjectAction(slug: string) {
   await requireAdmin();
   const sql = await db();
   await sql`DELETE FROM projects WHERE slug = ${slug}`;
+  // A later item reusing this slug must not inherit the dead item's history.
+  await sql`DELETE FROM revisions WHERE kind = 'project' AND ref = ${slug}`;
   publish(slug);
 }
 
@@ -274,6 +294,7 @@ function publishServices(slug?: string) {
   revalidateTag(SERVICES_TAG, "max");
   revalidatePath("/");
   revalidatePath("/services");
+  revalidatePath("/sitemap.xml");
   if (slug) revalidatePath(`/services/${slug}`);
 }
 
@@ -311,6 +332,15 @@ export async function saveServiceAction(
             visible = ${visible}, updated_at = now()
         WHERE slug = ${slug}
       `;
+      if (nextSlug !== slug) {
+        // Keep history attached and repair other services' "next" pointers.
+        await sql`UPDATE revisions SET ref = ${nextSlug} WHERE kind = 'service' AND ref = ${slug}`;
+        await sql`
+          UPDATE services
+          SET data = jsonb_set(data, '{next}', to_jsonb(${nextSlug}::text))
+          WHERE data->>'next' = ${slug}
+        `;
+      }
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Save failed.";
@@ -332,6 +362,7 @@ export async function deleteServiceAction(slug: string) {
   await requireAdmin();
   const sql = await db();
   await sql`DELETE FROM services WHERE slug = ${slug}`;
+  await sql`DELETE FROM revisions WHERE kind = 'service' AND ref = ${slug}`;
   publishServices(slug);
 }
 
@@ -349,6 +380,7 @@ export async function reorderServicesAction(slugs: string[]) {
 function publishPages(slug?: string) {
   revalidateTag(PAGES_TAG, "max");
   revalidatePath("/", "layout"); // nav may list custom pages
+  revalidatePath("/sitemap.xml");
   if (slug) revalidatePath(`/${slug}`);
 }
 
@@ -383,11 +415,15 @@ export async function savePageAction(
         VALUES (${nextSlug}, ${JSON.stringify(page)}::jsonb, ${visible}, ${showInNav}, ${max[0].m + 1})
       `;
     } else if (mode === "draft") {
+      // Visibility and nav placement are live state - honor the toggles
+      // on draft saves too, as the editor copy promises.
       const rows = (await sql`
-        UPDATE pages SET draft_data = ${JSON.stringify(page)}::jsonb, updated_at = now()
+        UPDATE pages SET draft_data = ${JSON.stringify(page)}::jsonb,
+            visible = ${visible}, show_in_nav = ${showInNav}, updated_at = now()
         WHERE slug = ${slug} RETURNING slug
       `) as unknown[];
       if (rows.length === 0) return { error: `Page "${slug}" not found.` };
+      publishPages(slug);
       return { slug };
     } else {
       const current = (await sql`SELECT data FROM pages WHERE slug = ${slug}`) as { data: unknown }[];
@@ -400,6 +436,8 @@ export async function savePageAction(
             updated_at = now()
         WHERE slug = ${slug}
       `;
+      if (nextSlug !== slug)
+        await sql`UPDATE revisions SET ref = ${nextSlug} WHERE kind = 'page' AND ref = ${slug}`;
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Save failed.";
@@ -421,6 +459,7 @@ export async function deletePageAction(slug: string) {
   await requireAdmin();
   const sql = await db();
   await sql`DELETE FROM pages WHERE slug = ${slug}`;
+  await sql`DELETE FROM revisions WHERE kind = 'page' AND ref = ${slug}`;
   publishPages(slug);
 }
 
@@ -447,8 +486,11 @@ export async function uploadResumeAction(
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0)
     return { error: "No file selected." };
-  if (file.type !== "application/pdf") return { error: "Resume must be a PDF." };
   if (file.size > 15 * 1024 * 1024) return { error: "Max file size is 15MB." };
+  // Verify the actual bytes are a PDF (%PDF), not just the claimed type.
+  const pdfHead = new Uint8Array(await file.slice(0, 4).arrayBuffer());
+  if (!(pdfHead[0] === 0x25 && pdfHead[1] === 0x50 && pdfHead[2] === 0x44 && pdfHead[3] === 0x46))
+    return { error: "Resume must be a PDF." };
   try {
     const blob = await put(`portfolio/resume-${Date.now()}.pdf`, file, {
       access: "public",
@@ -470,6 +512,24 @@ export async function uploadResumeAction(
 
 // ---------- Media ----------
 
+/** Magic-byte sniffing - trust the file's actual bytes, not the
+ *  client-supplied MIME type. Notably rejects SVG (scriptable). */
+function sniffMediaType(bytes: Uint8Array): { ext: string } | null {
+  const startsWith = (sig: number[], offset = 0) =>
+    sig.every((b, i) => bytes[offset + i] === b);
+  if (startsWith([0xff, 0xd8, 0xff])) return { ext: "jpg" };
+  if (startsWith([0x89, 0x50, 0x4e, 0x47])) return { ext: "png" };
+  if (startsWith([0x47, 0x49, 0x46, 0x38])) return { ext: "gif" };
+  // RIFF....WEBP
+  if (startsWith([0x52, 0x49, 0x46, 0x46]) && startsWith([0x57, 0x45, 0x42, 0x50], 8))
+    return { ext: "webp" };
+  // ....ftyp (mp4/mov family)
+  if (startsWith([0x66, 0x74, 0x79, 0x70], 4)) return { ext: "mp4" };
+  // EBML (webm/mkv)
+  if (startsWith([0x1a, 0x45, 0xdf, 0xa3])) return { ext: "webm" };
+  return null;
+}
+
 export async function uploadImageAction(
   formData: FormData,
 ): Promise<{ url?: string; error?: string }> {
@@ -478,12 +538,17 @@ export async function uploadImageAction(
   if (!(file instanceof File) || file.size === 0)
     return { error: "No file selected." };
   if (file.size > 15 * 1024 * 1024) return { error: "Max file size is 15MB." };
-  if (!/^(image|video)\//.test(file.type))
-    return { error: "Only image or video files." };
+  const head = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const sniffed = sniffMediaType(head);
+  if (!sniffed)
+    return {
+      error: "Only JPG, PNG, GIF, WebP, MP4, or WebM files (SVG not allowed).",
+    };
   try {
-    const blob = await put(`portfolio/${Date.now()}-${file.name}`, file, {
-      access: "public",
-    });
+    // Random name + sniffed extension - the client filename never
+    // reaches the blob path.
+    const name = `portfolio/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${sniffed.ext}`;
+    const blob = await put(name, file, { access: "public" });
     return { url: blob.url };
   } catch (e) {
     return {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import type { SiteContentKey } from "@/lib/site";
+import { siteDefaults, type SiteContentKey } from "@/lib/site";
 import { saveSiteContentAction } from "../../actions";
 import { AutoForm } from "../../ui";
 
@@ -68,7 +68,7 @@ export function SiteEditor({
       )}
 
       <div className="rounded-2xl border border-border bg-surface p-6">
-        <AutoForm value={value} onChange={setValue} />
+        <AutoForm value={value} onChange={setValue} shape={siteDefaults[contentKey]} />
       </div>
 
       <div className="mt-8 flex justify-end">

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Reveal } from "./reveal";
+import { safeMediaUrl } from "@/lib/safe-url";
 
 type Props = {
   url: string;
@@ -36,7 +37,11 @@ export function EmbedPreview({
   const [loaded, setLoaded] = useState(false);
   const [scale, setScale] = useState(1);
   const frameRef = useRef<HTMLDivElement>(null);
-  const displayUrl = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  // Only ever embed validated http(s) URLs - admin-entered content.
+  const safeUrl = safeMediaUrl(url);
+  const displayUrl = (safeUrl ?? "")
+    .replace(/^https?:\/\//, "")
+    .replace(/\/$/, "");
 
   useEffect(() => {
     const el = frameRef.current;
@@ -55,6 +60,9 @@ export function EmbedPreview({
   // Visible height is the scaled iframe height - keeps the container shrink-wrapped
   const visibleHeight = desktopHeight * scale;
 
+  // After all hooks: refuse to render anything for an invalid URL.
+  if (!safeUrl) return null;
+
   return (
     <Reveal delay={0.45}>
       <div>
@@ -71,7 +79,7 @@ export function EmbedPreview({
             )}
           </div>
           <a
-            href={url}
+            href={safeUrl ?? undefined}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-3 text-sm font-medium hover:bg-accent hover:text-white hover:border-accent transition-colors whitespace-nowrap"
@@ -95,7 +103,7 @@ export function EmbedPreview({
               </div>
             </div>
             <a
-              href={url}
+              href={safeUrl ?? undefined}
               target="_blank"
               rel="noopener noreferrer"
               className="text-fg-muted hover:text-fg transition-colors flex-none"
@@ -135,7 +143,7 @@ export function EmbedPreview({
               </div>
             )}
             <iframe
-              src={url}
+              src={safeUrl ?? undefined}
               className="absolute top-0 left-0 border-0"
               style={{
                 width: `${desktopWidth}px`,
@@ -143,6 +151,7 @@ export function EmbedPreview({
                 transform: `scale(${scale})`,
                 transformOrigin: "top left",
               }}
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
               onLoad={() => setLoaded(true)}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

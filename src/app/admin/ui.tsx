@@ -65,30 +65,50 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
+/** String field whose element type is decided once at mount - switching
+ *  input<->textarea per keystroke remounts the element and drops focus
+ *  mid-sentence the moment a value crosses the length threshold. */
+function StableStringField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const [asTextarea] = useState(
+    () => value.length > 80 || value.includes("\n"),
+  );
+  return asTextarea ? (
+    <textarea
+      className={`${inputCls} min-h-24 resize-y`}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  ) : (
+    <input
+      className={inputCls}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+}
+
 export function AutoForm({
   value,
   onChange,
   path = "",
+  shape,
 }: {
   value: unknown;
   onChange: (next: unknown) => void;
   path?: string;
+  /** The default-content counterpart of `value` - supplies the item
+   *  template when an array has been emptied and its element shape can
+   *  no longer be inferred from the data itself. */
+  shape?: unknown;
 }) {
   if (typeof value === "string") {
-    const long = value.length > 80 || value.includes("\n");
-    return long ? (
-      <textarea
-        className={`${inputCls} min-h-24 resize-y`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    ) : (
-      <input
-        className={inputCls}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    );
+    return <StableStringField value={value} onChange={onChange} />;
   }
 
   if (typeof value === "boolean") {
@@ -114,8 +134,16 @@ export function AutoForm({
   }
 
   if (Array.isArray(value)) {
-    // Array of strings → one per line
-    if (value.every((v) => typeof v === "string")) {
+    const shapeArr = Array.isArray(shape) ? shape : [];
+    const objectTemplate = isRecord(value[0])
+      ? value[0]
+      : isRecord(shapeArr[0])
+        ? shapeArr[0]
+        : null;
+    // Array of strings → one per line (an EMPTY array only counts as
+    // strings when the shape doesn't say it holds objects - otherwise
+    // typing here would silently save strings where objects belong)
+    if (value.every((v) => typeof v === "string") && !objectTemplate) {
       return (
         <div>
           <textarea
@@ -181,6 +209,7 @@ export function AutoForm({
             <AutoForm
               value={item}
               path={`${path}[${i}]`}
+              shape={shapeArr[0] ?? value[0]}
               onChange={(next) =>
                 onChange(value.map((v, j) => (j === i ? next : v)))
               }
@@ -190,9 +219,9 @@ export function AutoForm({
         <button
           type="button"
           onClick={() => {
-            const template = isRecord(value[0])
+            const template = objectTemplate
               ? Object.fromEntries(
-                  Object.entries(value[0]).map(([k, v]) => [
+                  Object.entries(objectTemplate).map(([k, v]) => [
                     k,
                     typeof v === "string" ? "" : v,
                   ]),
@@ -217,6 +246,7 @@ export function AutoForm({
             <AutoForm
               value={v}
               path={path ? `${path}.${k}` : k}
+              shape={isRecord(shape) ? shape[k] : undefined}
               onChange={(next) => onChange({ ...value, [k]: next })}
             />
           </div>

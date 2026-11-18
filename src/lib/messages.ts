@@ -13,9 +13,11 @@ export async function getMessages(): Promise<ContactMessage[]> {
   const sql = getDb();
   if (!sql) return [];
   await ensureSchema(sql);
+  // Capped so a spam flood can never make the inbox page unrenderable.
   return (await sql`
     SELECT id, name, email, message, handled, created_at::text
     FROM messages ORDER BY handled ASC, id DESC
+    LIMIT 300
   `) as ContactMessage[];
 }
 

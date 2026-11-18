@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import type { Service } from "@/lib/services";
+import { services as seedServices, type Service } from "@/lib/services";
 import { saveServiceAction } from "../../actions";
 import { AutoForm } from "../../ui";
 
@@ -109,6 +109,7 @@ export function ServiceEditor({
         <AutoForm
           value={service}
           onChange={(next) => setService(next as Service)}
+          shape={seedServices[0]}
         />
       </div>
 

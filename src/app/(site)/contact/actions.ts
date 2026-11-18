@@ -1,16 +1,18 @@
 "use server";
 
 import { getDb, ensureSchema } from "@/lib/db";
+import { clientIpHash } from "@/lib/auth";
 
 /**
  * Public contact-form submission - the one server action that runs
- * unauthenticated. Validates, rate-limits per instance, and stores
- * the message for the admin Inbox.
+ * unauthenticated. Validates, rate-limits durably (per-IP and global
+ * counters live in Postgres, so parallel lambda instances and cold
+ * starts share the same limits), and stores the message for the
+ * admin Inbox.
  */
 
-// Per-instance token bucket - enough to blunt drive-by spam without
-// external services. Serious volume would need a real rate limiter.
-let recent: number[] = [];
+const PER_IP_PER_HOUR = 5;
+const GLOBAL_PER_HOUR = 40;
 
 export async function submitMessageAction(input: {
   name: string;
@@ -29,19 +31,26 @@ export async function submitMessageAction(input: {
   if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || message.length < 12)
     return { ok: false, error: "Please check the form fields." };
 
-  const now = Date.now();
-  recent = recent.filter((t) => now - t < 60_000);
-  if (recent.length >= 5)
-    return { ok: false, error: "Too many messages - try again in a minute." };
-  recent.push(now);
-
   const sql = getDb();
   if (!sql) return { ok: false, error: "Message service is unavailable." };
   try {
     await ensureSchema(sql);
+    const ipHash = await clientIpHash();
+    const counts = (await sql`
+      SELECT
+        count(*) FILTER (WHERE ip_hash = ${ipHash})::int AS mine,
+        count(*)::int AS total
+      FROM messages
+      WHERE created_at > now() - interval '1 hour'
+    `) as { mine: number; total: number }[];
+    if (counts[0].mine >= PER_IP_PER_HOUR || counts[0].total >= GLOBAL_PER_HOUR)
+      return {
+        ok: false,
+        error: "Too many messages right now - please email me directly.",
+      };
     await sql`
-      INSERT INTO messages (name, email, message)
-      VALUES (${name}, ${email}, ${message})
+      INSERT INTO messages (name, email, message, ip_hash)
+      VALUES (${name}, ${email}, ${message}, ${ipHash})
     `;
     return { ok: true };
   } catch (err) {

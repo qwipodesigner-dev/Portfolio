@@ -117,10 +117,9 @@ export async function seedDatabase(): Promise<{ seeded: number }> {
   const sql = getDb();
   if (!sql) throw new Error("DATABASE_URL is not configured");
   await ensureSchema(sql);
-  const existing = (await sql`SELECT count(*)::int AS n FROM projects`) as {
-    n: number;
-  }[];
-  if (existing[0].n > 0) return { seeded: 0 };
+  // No early-return on a non-empty table: ON CONFLICT DO NOTHING makes
+  // the whole loop idempotent, so a partially-failed import simply
+  // completes on the next run instead of being stuck forever.
   for (let i = 0; i < seedProjects.length; i++) {
     const p = seedProjects[i];
     await sql`

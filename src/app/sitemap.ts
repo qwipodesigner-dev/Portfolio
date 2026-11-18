@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getVisibleProjects } from "@/lib/content";
 import { getVisibleServices } from "@/lib/services-data";
 import { getVisiblePages } from "@/lib/pages-data";
-import { getSiteContent } from "@/lib/site";
+import { getSiteContent, siteBaseUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [projects, services, pages, seo] = await Promise.all([
@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getVisiblePages(),
     getSiteContent("seo"),
   ]);
-  const base = seo.siteUrl.replace(/\/$/, "");
+  const base = siteBaseUrl(seo.siteUrl);
   const now = new Date();
 
   return [

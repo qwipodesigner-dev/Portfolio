@@ -15,9 +15,36 @@ export type Sql = NonNullable<ReturnType<typeof getDb>>;
 
 let schemaReady: Promise<void> | null = null;
 
-/** Create tables on first use - idempotent, runs once per server instance. */
+/**
+ * Ensure the schema exists. Cheap sentinel probe first: when the newest
+ * migration is already in place (the common case for every request after
+ * initial setup), no DDL runs at all - full bootstrap only executes on a
+ * genuinely fresh or partially-migrated database. This keeps DDL out of
+ * the hot request path (it previously ran ~14 statements on every cold
+ * start, an easy cost-amplification target via the public contact action).
+ */
 export function ensureSchema(sql: Sql) {
-  schemaReady ??= (async () => {
+  // A rejected bootstrap must not poison the instance forever - clear the
+  // memo on failure so the next request retries.
+  schemaReady ??= run(sql).catch((err) => {
+    schemaReady = null;
+    throw err;
+  });
+  return schemaReady;
+}
+
+async function run(sql: Sql) {
+  await (async () => {
+    try {
+      // Probes the newest parts of the schema: messages.ip_hash and
+      // login_attempts.ip_hash are the latest additions - if both exist,
+      // everything older does too.
+      await sql`SELECT ip_hash FROM messages LIMIT 0`;
+      await sql`SELECT ip_hash FROM login_attempts LIMIT 0`;
+      return;
+    } catch {
+      /* missing table or column - run the full bootstrap below */
+    }
     await sql`
       CREATE TABLE IF NOT EXISTS projects (
         id serial PRIMARY KEY,
@@ -93,6 +120,10 @@ export function ensureSchema(sql: Sql) {
     await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS draft_data jsonb`;
     await sql`ALTER TABLE services ADD COLUMN IF NOT EXISTS draft_data jsonb`;
     await sql`ALTER TABLE pages ADD COLUMN IF NOT EXISTS draft_data jsonb`;
+    // Per-caller rate limiting + fast pruning
+    await sql`ALTER TABLE login_attempts ADD COLUMN IF NOT EXISTS ip_hash text`;
+    await sql`CREATE INDEX IF NOT EXISTS login_attempts_ip_at ON login_attempts (ip_hash, at DESC)`;
+    await sql`ALTER TABLE messages ADD COLUMN IF NOT EXISTS ip_hash text`;
+    await sql`CREATE INDEX IF NOT EXISTS messages_created ON messages (created_at DESC)`;
   })();
-  return schemaReady;
 }

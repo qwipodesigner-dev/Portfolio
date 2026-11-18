@@ -383,6 +383,24 @@ export const siteDefaults = {
 export type SiteContentKey = keyof typeof siteDefaults;
 export const SITE_TAG = "site";
 
+/** Admin-edited Site Url, parsed defensively: tolerates a missing
+ *  protocol and falls back to the real domain rather than crashing
+ *  or emitting malformed URLs in metadata/sitemap/robots. */
+export function siteBaseUrl(raw: string): string {
+  const fallback = "https://www.vikasmittapalli.space";
+  const candidate = (raw ?? "").trim();
+  for (const attempt of [candidate, `https://${candidate}`, fallback]) {
+    try {
+      const u = new URL(attempt);
+      if (u.protocol === "http:" || u.protocol === "https:")
+        return u.href.replace(/\/$/, "");
+    } catch {
+      /* try next */
+    }
+  }
+  return fallback;
+}
+
 /* ------------------------------------------------------------------ */
 /* Reads - DB row wins over default, deep-merged per top-level field   */
 /* so newly added fields fall back gracefully.                         */

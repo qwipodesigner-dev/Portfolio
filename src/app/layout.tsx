@@ -32,10 +32,29 @@ const lexend = Lexend({
   display: "swap",
 });
 
+/** Parse the admin-edited Site Url defensively - a value saved without
+ *  a protocol (or emptied) must degrade gracefully, never 500 every
+ *  page (which would also lock the admin out of fixing it). */
+function parseSiteUrl(raw: string): URL {
+  const fallback = "https://www.vikasmittapalli.space";
+  const candidate = (raw ?? "").trim();
+  for (const attempt of [candidate, `https://${candidate}`, fallback]) {
+    try {
+      const u = new URL(attempt);
+      if (u.protocol === "http:" || u.protocol === "https:") return u;
+    } catch {
+      /* try next */
+    }
+  }
+  return new URL(fallback);
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSiteContent("seo");
+  const base = parseSiteUrl(seo.siteUrl);
   return {
-    metadataBase: new URL(seo.siteUrl),
+    metadataBase: base,
+    alternates: { canonical: "./" },
     title: {
       default: seo.siteTitle,
       template: seo.titleTemplate,
@@ -47,7 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       locale: "en_IN",
-      url: seo.siteUrl,
+      url: base.href,
       title: seo.siteTitle,
       description: seo.description,
       siteName: "Vikas Mittapalli",

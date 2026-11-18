@@ -42,7 +42,8 @@ export default async function CaseStudyPage({
     <>
       <CaseStudyView project={project} />
 
-      {/* Next project */}
+      {/* Next project - hidden when it would link to itself */}
+      {nextProject.slug !== slug && (
       <section className="border-t border-border py-20">
         <Container>
           <Link
@@ -66,6 +67,7 @@ export default async function CaseStudyPage({
           </Link>
         </Container>
       </section>
+      )}
     </>
   );
 }

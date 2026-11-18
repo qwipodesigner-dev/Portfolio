@@ -7,6 +7,10 @@
  */
 export function plainHyphens<T>(value: T): T {
   if (typeof value === "string") {
+    // URLs legitimately contain en dashes (Notion/Figma share links,
+    // encoded filenames) - rewriting those breaks the link, so leave
+    // anything URL-shaped untouched.
+    if (/^https?:\/\//i.test(value.trim())) return value;
     // — em dash, – en dash (unicode escapes so tooling that
     // strips literal dashes can never break this regex)
     return value.replace(/[—–]/g, "-") as T;

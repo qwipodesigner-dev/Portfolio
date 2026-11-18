@@ -223,12 +223,26 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     html.classList.toggle("a11y-tts", settings.textToSpeech);
   }, [settings, hydrated]);
 
-  // ADHD reading-mask: track cursor Y while active
+  // ADHD reading-mask: track cursor Y while active. On touch devices
+  // there is no mousemove, so start the band mid-screen and follow
+  // touches - otherwise enabling the mask on a phone blacks out
+  // everything below the very top of the page with no way to move it.
   useEffect(() => {
     if (!settings.adhdMode) return;
+    setAdhdY(Math.round(window.innerHeight * 0.35));
     const onMove = (e: MouseEvent) => setAdhdY(e.clientY);
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t) setAdhdY(t.clientY);
+    };
     window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onTouch, { passive: true });
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("touchmove", onTouch);
+      window.removeEventListener("touchstart", onTouch);
+    };
   }, [settings.adhdMode]);
 
   // Google Translate Element loader - load once on mount
@@ -435,6 +449,15 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       if (!target?.closest) return;
       // never read the widget itself
       if (target.closest('[data-a11y="ignore"]')) return;
+      // While read-aloud is on, a single click on a link/button READS it
+      // instead of activating it (otherwise navigation kills the speech
+      // instantly and interactive elements can never be heard).
+      // Double-click activates as normal.
+      const interactive = target.closest("a[href], button, [role='button']");
+      if (interactive && e.detail < 2) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       const text = (target as HTMLElement).innerText?.trim();
       if (!text) return;
       synth.cancel();

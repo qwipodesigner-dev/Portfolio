@@ -51,7 +51,20 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   // position internally and Next.js's default scroll restoration doesn't
   // travel through it cleanly, so we bypass with an immediate scrollTo(0).
   // Re-measure too - the new page's height differs from the old one's.
+  // Skipped on the very first run (it would defeat the browser's own
+  // scroll restoration on reload/back-forward) and when the URL carries
+  // a #hash (it would snap away from the anchor the browser just hit).
+  const firstRun = useRef(true);
   useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      lenisRef.current?.resize();
+      return;
+    }
+    if (window.location.hash) {
+      lenisRef.current?.resize();
+      return;
+    }
     if (lenisRef.current) {
       lenisRef.current.scrollTo(0, { immediate: true, force: true });
       lenisRef.current.resize();

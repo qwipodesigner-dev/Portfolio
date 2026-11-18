@@ -47,15 +47,24 @@ export function AuthForm({ mode }: { mode: "setup" | "login" }) {
             required
           />
           {mode === "setup" && (
-            <input
-              className={inputCls}
-              type="password"
-              name="confirm"
-              placeholder="Confirm password"
-              autoComplete="new-password"
-              minLength={10}
-              required
-            />
+            <>
+              <input
+                className={inputCls}
+                type="password"
+                name="confirm"
+                placeholder="Confirm password"
+                autoComplete="new-password"
+                minLength={10}
+                required
+              />
+              <input
+                className={inputCls}
+                type="password"
+                name="setupToken"
+                placeholder="Setup token (only if configured)"
+                autoComplete="off"
+              />
+            </>
           )}
 
           {state?.error && (

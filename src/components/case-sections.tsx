@@ -1,5 +1,6 @@
 import { Reveal } from "./reveal";
 import type { CaseStudySection } from "@/lib/projects";
+import { safeMediaUrl, videoEmbedUrl } from "@/lib/safe-url";
 
 /**
  * Shared renderer for block-based content sections - used by case
@@ -39,37 +40,43 @@ export function CaseSections({ sections }: { sections: CaseStudySection[] }) {
             </div>
           ) : (
             <figure className="mt-12">
-              {section.type === "image" && (
+              {section.type === "image" && safeMediaUrl(section.src) && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={section.src}
+                  src={safeMediaUrl(section.src)!}
                   alt={section.alt ?? ""}
                   className="w-full rounded-2xl border border-border"
                   loading="lazy"
                 />
               )}
               {section.type === "video" &&
-                (/youtube\.com|youtu\.be|vimeo\.com/.test(section.src) ? (
-                  <iframe
-                    src={section.src}
-                    className="w-full aspect-video rounded-2xl border border-border"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowFullScreen
-                    title={section.caption ?? "Video"}
-                  />
-                ) : (
-                  <video
-                    src={section.src}
-                    controls
-                    playsInline
-                    className="w-full rounded-2xl border border-border"
-                  />
-                ))}
-              {section.type === "embed" && (
+                (() => {
+                  const video = videoEmbedUrl(section.src);
+                  if (!video) return null;
+                  return video.kind === "iframe" ? (
+                    <iframe
+                      src={video.src}
+                      className="w-full aspect-video rounded-2xl border border-border"
+                      sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowFullScreen
+                      title={section.caption ?? "Video"}
+                    />
+                  ) : (
+                    <video
+                      src={video.src}
+                      controls
+                      playsInline
+                      className="w-full rounded-2xl border border-border"
+                    />
+                  );
+                })()}
+              {section.type === "embed" && safeMediaUrl(section.url) && (
                 <iframe
-                  src={section.url}
+                  src={safeMediaUrl(section.url)!}
                   className="w-full rounded-2xl border border-border"
                   style={{ height: section.height ?? 480 }}
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                   title={section.caption ?? "Embedded content"}
                 />
               )}

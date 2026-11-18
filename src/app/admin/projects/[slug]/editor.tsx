@@ -47,10 +47,13 @@ export function ProjectEditor({
   const save = (mode: "publish" | "draft") => {
     setError(null);
     if (!p.title.trim()) return setError("Title is required.");
-    if (!p.slug.trim() && originalSlug === "__new__")
-      set("slug", p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
+    // Work on a local copy - setState is async, so deriving the slug via
+    // set() and submitting p in the same closure sends the stale value.
+    const project = { ...p };
+    if (!project.slug.trim() && originalSlug === "__new__")
+      project.slug = project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     startTransition(async () => {
-      const res = await saveProjectAction(originalSlug, p, visible, mode);
+      const res = await saveProjectAction(originalSlug, project, visible, mode);
       if (res.error) {
         setError(res.error);
       } else {
