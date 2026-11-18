@@ -75,6 +75,7 @@ export const DEFAULT_SETTINGS: AccessibilitySettings = {
 
 const STORAGE_KEY = "vm-a11y-settings";
 const REOPEN_FLAG = "vm-a11y-panel-reopen";
+const RELOAD_GUARD = "vm-a11y-lang-reloads";
 
 type Ctx = {
   settings: AccessibilitySettings;
@@ -254,19 +255,48 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
         const current = select.value;
         const isTranslated = !!current && current !== "" && current !== "en";
         if (isTranslated) {
-          const host = window.location.hostname;
+          // Google sets googtrans at several scopes: host-only AND the
+          // registrable domain (e.g. .vikasmittapalli.space). A survivor at
+          // any scope re-translates the page after reload, so expire it at
+          // every ancestor scope the browser will let us touch. (On
+          // *.vercel.app the parent scope is a public suffix and never
+          // existed - this only bites on custom domains.)
           const expiry = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
-          document.cookie = `googtrans=; path=/; ${expiry}`;
-          document.cookie = `googtrans=; path=/; domain=${host}; ${expiry}`;
-          document.cookie = `googtrans=; path=/; domain=.${host}; ${expiry}`;
-          // Re-open the panel on the next mount so the user doesn't lose
-          // their place when the reload happens.
+          const parts = window.location.hostname.split(".");
+          const scopes = [""]; // host-only cookie (no domain attribute)
+          for (let i = 0; i < parts.length - 1; i++) {
+            const d = parts.slice(i).join(".");
+            scopes.push(`domain=${d}; `, `domain=.${d}; `);
+          }
+          for (const scope of scopes) {
+            document.cookie = `googtrans=; path=/; ${scope}${expiry}`;
+          }
+          // Loop guard: if some scope still survives, never reload more
+          // than twice per session - a stale language beats a reload loop.
+          let reloads = 0;
           try {
-            if (isOpen) sessionStorage.setItem(REOPEN_FLAG, "1");
+            reloads = Number(sessionStorage.getItem(RELOAD_GUARD) ?? "0");
+            sessionStorage.setItem(RELOAD_GUARD, String(reloads + 1));
           } catch {
             /* ignore */
           }
-          window.location.reload();
+          if (reloads < 2) {
+            // Re-open the panel on the next mount so the user doesn't lose
+            // their place when the reload happens.
+            try {
+              if (isOpen) sessionStorage.setItem(REOPEN_FLAG, "1");
+            } catch {
+              /* ignore */
+            }
+            window.location.reload();
+          }
+        } else {
+          // English confirmed on screen - reset the guard for next time.
+          try {
+            sessionStorage.removeItem(RELOAD_GUARD);
+          } catch {
+            /* ignore */
+          }
         }
         return true;
       }
