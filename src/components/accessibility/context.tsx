@@ -143,6 +143,40 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     }
   }, [settings, hydrated]);
 
+  // While a translation is active, force internal links to full page
+  // loads. Google Translate rewrites the DOM in place, and Next.js's
+  // client-side navigation then reconciles against nodes it no longer
+  // owns and crashes ("This page could not load"). A hard navigation
+  // sidesteps that entirely - the next page auto-translates from the
+  // googtrans cookie, so the language carries over seamlessly.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (settings.language === "en") return;
+    const onClick = (e: MouseEvent) => {
+      if (
+        e.defaultPrevented ||
+        e.button !== 0 ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey
+      )
+        return;
+      const target = e.target as Element | null;
+      const anchor = target?.closest?.("a[href]");
+      if (!anchor) return;
+      if (anchor.getAttribute("target")) return;
+      const href = anchor.getAttribute("href") ?? "";
+      if (!href.startsWith("/")) return; // internal links only
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.assign(href);
+    };
+    // Capture phase - runs before Next.js's Link click handler.
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [settings.language, hydrated]);
+
   // Apply settings to <html> as classes
   useEffect(() => {
     if (!hydrated) return;
